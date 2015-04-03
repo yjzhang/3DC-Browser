@@ -7,30 +7,16 @@
     <body> 
         <input type="file" id="files" name="files[]" multiple />
         <output id="list"></output>
-
-        <script>
-            // File upload handler
-            function handleFileSelect(evt) {
-                var files = evt.target.files; // FileList object
-
-                // files is a FileList of File objects. List some properties.
-                var output = [];
-                ocument.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-            }
-            document.getElementById('files').addEventListener('change', handleFileSelect, false);
-        </script>
-
         <div id="drop_zone">Drop files here</div>
         <output id="list"></output>
         <script src="js/three.min.js"></script> 
+        <script src="js/TrackballControls.js"></script> 
         <script src="chrom_render.js"></script> 
+        <script src="file_upload.js"></script>
 
         <script> 
-            function render() { 
-                requestAnimationFrame( render ); 
-                renderer.render( scene, camera ); 
-            } 
             render();
+            animate();
         </script> 
     </body> 
 </html>
