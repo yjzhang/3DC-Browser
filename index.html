@@ -1,14 +1,21 @@
 <html> 
     <head> 
         <title>My first Three.js app</title> 
-        <style> body { margin: 0; } canvas { width: 100%; height: 100% } </style> 
+        <link rel="stylesheet" type="text/css" href="style.css"/>
     </head> 
 
     <body> 
-        <input type="file" id="files" name="files[]" multiple />
-        <output id="list"></output>
-        <div id="drop_zone">Drop files here</div>
-        <output id="list"></output>
+        <div class="float-top-group">
+            <div class="button-group">
+                Upload a structure file here:
+                <input type="file" id="files" name="files[]" multiple />
+            </div>
+            <div class="button-group">
+                Upload a bedfile here:
+                <input type="file" id="bedfiles" name="files[]" multiple />
+            </div>
+        </div>
+        <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
         <script src="js/three.min.js"></script> 
         <script src="js/TrackballControls.js"></script> 
         <script src="chrom_render.js"></script> 

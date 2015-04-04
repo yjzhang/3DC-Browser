@@ -1,7 +1,7 @@
 
 // 1. setting up the basic scene
 //
-var h = window.innerHeight - 100;
+var h = window.innerHeight;
 var w = window.innerWidth;
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, 
@@ -69,10 +69,10 @@ function reloadObject(text, oldObject) {
 var light1 = new THREE.DirectionalLight( 0xffffff , 1); // soft white light 
 light1.position.set(0, 1, 0);
 scene.add( light1 );
-var light2 = new THREE.DirectionalLight( 0xffffff , 0.6); // soft white light 
+var light2 = new THREE.DirectionalLight( 0xffffff , 0.7); // soft white light 
 light2.position.set(1, 0, 0);
 scene.add( light2 );
-var light3 = new THREE.DirectionalLight( 0xffffff , 0.6); // soft white light 
+var light3 = new THREE.DirectionalLight( 0xffffff , 0.7); // soft white light 
 light3.position.set(0, 0, 1);
 scene.add( light3 );
 
@@ -113,7 +113,13 @@ window.addEventListener( 'resize', onWindowResize, false );
 
 
 // 4. Setting up data tracks / colors
+// TODO: implement this
 
+/**
+ * Given a bedfile, this should return a list of colors...
+ * */
+function readBedfile(bedfile, chrom, arm, removed_bins) {
+}
 
 
 // 5. rendering
