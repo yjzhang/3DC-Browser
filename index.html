@@ -14,6 +14,23 @@
                 Upload a bedfile here:
                 <input type="file" id="bedfiles" name="files[]" multiple />
             </div>
+            <div class="button-group" >
+                <button name="toggle-controls" onclick="javascript:
+                    var c=document.getElementById('controls'); 
+                    if (c.style.display=='none') {
+                        c.style.display='block';
+                    } else c.style.display='none';">Show/Hide Controls</button>
+                <div id="controls" style="display:none;">
+                Chromosome number/name: <input type="text" id="chrom" name="chrom"\>
+                <p>
+                Arm: 
+                <select id="arm-select" name="arm">
+                    <option value="0" selected="selected">Both</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+                </div>
+            </div>
         </div>
         <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
         <script src="js/three.min.js"></script> 
