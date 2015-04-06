@@ -13,7 +13,6 @@ function handleFileSelect(evt) {
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.
     var output = [];
-    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
 document.getElementById('files').addEventListener('change', 

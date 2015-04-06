@@ -43,7 +43,8 @@ scene.add( light3 );
 
 // global parameters
 var tubeRadius = 0.01;
-var colorMap = [0xff0000, 0x0000ff];
+var colorMap = BLUE_WHITE_RED_SCHEME;
+var colors = [];
 
 /**
  * Given a string of coords, this returns an array of Vector3 objects.
@@ -68,6 +69,40 @@ function pointsToCurve(coords) {
 }
 
 /**
+ * Given an array of Vector3 objects, this returns an array containing
+ * THREE.Color objects for each point. Right now this just does linear
+ * interpolation.
+ * */
+function coordsToColors(num_points, colorScheme, values) {
+    var l = num_points;
+    var colors = [];
+    if (values == null) {
+        // do linear interpolation
+        for (var i = 0; i<num_points; i++) {
+            colors.push(new THREE.Color(makeColor(i, 0, l-1, colorScheme)));
+        }
+    } else {
+        // need to get min, max
+        for (var i = 0; i<num_points; i++) {
+            colors.push(new THREE.Color(makeColor(values[i], -1, 1, colorScheme)));
+        }
+    }
+    return colors;
+}
+
+/**
+ * Creates a Geometry from the given list of coords
+ * */
+function coordsToLineGeometry(all_coords) {
+    var geometry = new THREE.Geometry();
+    for (var i in all_coords) {
+        var c = all_coords[i];
+        geometry.vertices.push(c);
+    }
+    return geometry;
+}
+
+/**
  * Given a text file, this generates a geometry and replaces oldObject.
  * */
 function reloadObject(text, oldObject) {
@@ -76,11 +111,15 @@ function reloadObject(text, oldObject) {
     console.log(all_coords);
     curve = new THREE.SplineCurve3(all_coords);
     console.log(curve);
-    geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 8, false); 
+    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 8, false); 
+    geometry = coordsToLineGeometry(all_coords);
+    colors = coordsToColors(geometry.vertices.length, colorMap, null);
+    geometry.colors = colors;
     console.log(geometry);
-    material = new THREE.MeshPhongMaterial( { color : 0xff0000, shading: THREE.FlatShading } ); 
+    //material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:1, shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
+    material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 3, vertexColors: THREE.VertexColors } );
     //Create the final Object3d to add to the scene 
-    splineObject = new THREE.Mesh( geometry, material );
+    splineObject = new THREE.Line( geometry, material );
     scene.add(splineObject);
     return splineObject;
 }
