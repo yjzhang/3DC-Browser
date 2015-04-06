@@ -115,6 +115,7 @@ function reloadObject(text, oldObject) {
     geometry = coordsToLineGeometry(all_coords);
     colors = coordsToColors(geometry.vertices.length, colorMap, null);
     geometry.colors = colors;
+    //geometry.vertexColors = colors;
     console.log(geometry);
     //material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:1, shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
     material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 3, vertexColors: THREE.VertexColors } );
