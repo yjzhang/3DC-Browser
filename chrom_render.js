@@ -12,7 +12,7 @@ renderer.setSize(w, h);
 document.body.appendChild(renderer.domElement);
 
 // adding controls
-var controls = new THREE.TrackballControls( camera );
+var controls = new THREE.TrackballControls( camera , renderer.domElement);
 controls.rotateSpeed = 1.0;
 controls.zoomSpeed = 1.2;
 controls.panSpeed = 0.8;
@@ -45,6 +45,7 @@ scene.add( light3 );
 var tubeRadius = 0.01;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
+var colorValues = null;
 
 /**
  * Given a string of coords, this returns an array of Vector3 objects.
@@ -83,8 +84,10 @@ function coordsToColors(num_points, colorScheme, values) {
         }
     } else {
         // need to get min, max
+        var cmin = min(values);
+        var cmax = max(values);
         for (var i = 0; i<num_points; i++) {
-            colors.push(new THREE.Color(makeColor(values[i], -1, 1, colorScheme)));
+            colors.push(new THREE.Color(makeColor(values[i], cmin, cmax, colorScheme)));
         }
     }
     return colors;
@@ -111,16 +114,44 @@ function reloadObject(text, oldObject) {
     console.log(all_coords);
     curve = new THREE.SplineCurve3(all_coords);
     console.log(curve);
-    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 8, false); 
+    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
+    //      8, false); 
     geometry = coordsToLineGeometry(all_coords);
-    colors = coordsToColors(geometry.vertices.length, colorMap, null);
+    if (colorValues != null && colorValues.length == geometry.vertices.length) {
+        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+    } else {
+        colors = coordsToColors(geometry.vertices.length, colorMap, null);
+    }
     geometry.colors = colors;
-    //geometry.vertexColors = colors;
+    geometry.vertexColors = colors;
     console.log(geometry);
-    //material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:1, shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
-    material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 3, vertexColors: THREE.VertexColors } );
+    //material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:1, 
+    //      shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
+    material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, 
+        linewidth: 3, vertexColors: THREE.VertexColors } );
     //Create the final Object3d to add to the scene 
-    splineObject = new THREE.Line( geometry, material );
+    //splineObject = new THREE.Mesh(geometry, material);
+    splineObject = new THREE.Line(geometry, material);
+    scene.add(splineObject);
+    return splineObject;
+}
+
+function updateColors(newValues, oldObject) {
+    colorValues = newValues;
+    if (newValues != null && newValues.length == geometry.vertices.length) {
+        colorValues = newValues;
+        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+    } else {
+        colorValues = newValues.slice(0, geometry.vertices.length);
+        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+    }
+    console.log("removing new object")
+    scene.remove(oldObject);
+    geometry = oldObject.geometry;
+    geometry.vertexColors = colors;
+    geometry.colors = colors;
+    console.log("adding new object");
+    splineObject = new THREE.Line(geometry, oldObject.material);
     scene.add(splineObject);
     return splineObject;
 }
@@ -160,9 +191,48 @@ window.addEventListener( 'resize', onWindowResize, false );
 // TODO: implement this
 
 /**
- * Given a bedfile, this should return a list of colors...
+ * Given a bedfile (as a string), this should return a list of values...
+ * Params:
+ *  - bedfile - a string
+ *  - resolution - the resolution of the 3d model
+ *  - chrom - the chromosome number
+ *  - value_name - the name of the header corresponding to the value that
+ *    should be plotted.
+ *  - arm - no use for now
+ *  - removed_bins - the bins that should be removed...
  * */
-function readBedfile(bedfile, chrom, arm, removed_bins) {
+function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) {
+    var values = [];
+    var bedfile_split = bedfile.trim().split("\n");
+    var line1 = bedfile_split[0].split(/\s+/);
+    // ldict maps column headers to column indices
+    // it should contain "chr", "start", "end", and something else
+    var ldict = {};
+    for (var j = 0; j<line1.length; j++) {
+        if (line1[j].length > 0)
+            ldict[line1[j]] = j;
+    }
+    console.log(line1);
+    console.log(ldict);
+    var current_bin = [];
+    var bin_id = 0;
+    var bin_start = 0;
+    for (var i = 0; i<bedfile_split.length; i++) {
+        var line_values = bedfile_split[i].split(/\s+/);
+        //console.log(line_values);
+        var chr = line_values[ldict.chr];
+        var start = line_values[ldict.start];
+        var end = line_values[ldict.end];
+        var val = line_values[ldict.eigenvector];
+        // TODO: something like bedtools intersect
+        if (chr == chrom) {
+            if (removed_bins != null && !contains(removed_bins, bin_id)) {
+                values.push(Number(val));
+            }
+            bin_id++;
+        }
+    }
+    return values;
 }
 
 

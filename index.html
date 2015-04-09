@@ -21,14 +21,22 @@
                         c.style.display='block';
                     } else c.style.display='none';">Show/Hide Controls</button>
                 <div id="controls" style="display:none;">
-                Chromosome number/name: <input type="text" id="chrom" name="chrom"\>
-                <p>
-                Arm: 
-                <select id="arm-select" name="arm">
-                    <option value="0" selected="selected">Both</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
+                    NOT YET IMPLEMENTED
+                    <p>
+                    Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
+                    <p>
+                    Chromosome number/name: <input type="text" id="chrom" name="chrom" value="chr4"/>
+                    <p>
+                    Arm: 
+                    <select id="arm-select" name="arm">
+                        <option value="0" selected="selected">Both</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <p>
+                    Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
+                    <p>
+                    <button name="update">Update</button>
                 </div>
             </div>
         </div>
@@ -36,6 +44,7 @@
         <script src="js/three.min.js"></script> 
         <script src="js/TrackballControls.js"></script> 
         <script src="colormaps.js"></script> 
+        <script src="utils.js"></script> 
         <script src="chrom_render.js"></script> 
         <script src="file_upload.js"></script>
 
