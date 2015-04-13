@@ -29,3 +29,11 @@ function max(array) {
 function contains(array, value) {
     return array.reduce(function (x, y) (x | (y==value)), false); 
 }
+
+function sum(array) {
+    return array.reduce(function (x, y) (x+y));
+}
+
+function mean(array) {
+    return sum(array)/array.length;
+}

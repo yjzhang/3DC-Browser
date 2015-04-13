@@ -21,7 +21,6 @@
                         c.style.display='block';
                     } else c.style.display='none';">Show/Hide Controls</button>
                 <div id="controls" style="display:none;">
-                    NOT YET IMPLEMENTED
                     <p>
                     Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
                     <p>
@@ -36,7 +35,7 @@
                     <p>
                     Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
                     <p>
-                    <button name="update">Update</button>
+                    <button name="update" onclick="javascript:updateOptions();">Update</button>
                 </div>
             </div>
         </div>

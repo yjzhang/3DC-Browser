@@ -43,6 +43,7 @@ scene.add( light3 );
 
 // global parameters
 var objectText = "";
+var bedText = "";
 var tubeRadius = 0.01;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
@@ -224,7 +225,21 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
         // TODO: something like bedtools intersect
         if (chr == chrom) {
             if (removed_bins != null && !contains(removed_bins, bin_id)) {
-                values.push(Number(val));
+                var bin_val = Number(val);
+                if (end-start < resolution) {
+                    current_bin.push(bin_val);
+                    if (end >= bin_start + resolution) {
+                        bin_val = mean(current_bin);
+                        values.push(bin_val);
+                        bin_start += end - start
+                    }
+                }
+                if (end-start > resolution) {
+                    // TODO: I have no idea what to do
+                }
+                if (end-start == resolution) {
+                    values.push(bin_val);
+                }
             }
             bin_id++;
         }
@@ -245,6 +260,7 @@ function onWindowResize() {
 function animate() {
     requestAnimationFrame( animate );
     controls.update();
+    //render();
 }
 
 function render() { 

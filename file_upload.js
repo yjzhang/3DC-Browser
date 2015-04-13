@@ -24,10 +24,11 @@ function handleBedfileSelect(evt) {
     console.log(f);
     var r = new FileReader();
     r.onload = function(e) {
-        // TODO: parse removed_bins, resolution
+        // parse removed_bins, resolution
         var res = Number(document.getElementById("resolution").value);
         var chrom = document.getElementById("chrom").value;
         var fileData = e.target.result;
+        bedText = fileData;
         var excludedBins = document.getElementById("excluded").value;
         excludedBins = excludedBins.split(",").map(function (x) Number(x));
         var newValues = readBedfile(fileData, res, chrom, "eigenvalue", null, excludedBins);
@@ -37,6 +38,19 @@ function handleBedfileSelect(evt) {
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.
     var output = [];
+}
+
+/**
+ * Callback for the "update" button
+ * */
+function updateOptions(evt) {
+    var res = Number(document.getElementById("resolution").value);
+    var chrom = document.getElementById("chrom").value;
+    var excludedBins = document.getElementById("excluded").value;
+    excludedBins = excludedBins.split(",").map(function (x) Number(x));
+    var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, excludedBins);
+    updateColors(newValues);
+    splineObject = reloadObject(objectText, splineObject);
 }
 
 document.getElementById('files').addEventListener('change', 
