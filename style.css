@@ -23,3 +23,11 @@ canvas {
     padding: 0.5em;
     margin: 0.5em; 
 }
+
+.right-group {
+    position: absolute;
+    right: 0;
+    background-color: #dcdcdc;
+    padding: 0.5em;
+    margin: 0.5em; 
+}

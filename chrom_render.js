@@ -42,6 +42,7 @@ scene.add( light3 );
 // 2. setting up the geometry...
 
 // global parameters
+var objectText = "";
 var tubeRadius = 0.01;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
@@ -133,6 +134,8 @@ function reloadObject(text, oldObject) {
     //splineObject = new THREE.Mesh(geometry, material);
     splineObject = new THREE.Line(geometry, material);
     scene.add(splineObject);
+    // draw color map
+    drawColorMap(document.getElementById("colormap-canvas"), colorMap, 1, -1);
     return splineObject;
 }
 
@@ -251,7 +254,6 @@ function animate() {
 }
 
 function render() { 
-    requestAnimationFrame( render ); 
     renderer.render( scene, camera ); 
 } 
 

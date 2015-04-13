@@ -42,7 +42,7 @@ function MultiColorScheme(name, minValue, maxValue, colors) {
     this.colorStops = [];
     for (var i = 0; i<this.colors.length; i++) {
         this.colorStops = 
-        this.colorStops.concat(i*(maxValue-minValue)/(this.colors.length-1));
+            this.colorStops.concat(i*(maxValue-minValue)/(this.colors.length-1));
     }
 }
 
@@ -52,12 +52,11 @@ function MultiColorScheme(name, minValue, maxValue, colors) {
  * */
 function makeMultiColor(value, min, max, colorScheme) {
     var colors = colorScheme.colors;
-    colorScheme.colorStops = [];
+    var colorStops = [];
     for (var i = 0; i<colorScheme.colors.length; i++) {
-        colorScheme.colorStops = 
-            colorScheme.colorStops.concat(i*(max)/(colors.length-1));
+        colorStops = 
+            colorStops.concat(i*(max-min)/(colors.length-1));
     }
-    var colorStops = colorScheme.colorStops;
     for (var i = 1; i<colorScheme.colors.length; i++) {
         if (value <= colorStops[i]+0.01 &&  value >= colorStops[i-1]) {
             var cMin = colorStops[i-1];
@@ -132,7 +131,7 @@ function makeColors(heatMap, colorScheme) {
 /**
 * Draws a color map for the given color scheme onto the given canvas.
 * */
-function drawColorMap(canvas, colorScheme) {
+function drawColorMap(canvas, colorScheme, maxValue, minValue) {
     var context = canvas.getContext('2d');
     var width = canvas.width;
     var height = canvas.height;
@@ -140,7 +139,7 @@ function drawColorMap(canvas, colorScheme) {
     if (colorScheme instanceof MultiColorScheme) {
         for (var i = 0; i<colorScheme.colorStops.length; i++) {
             gradient.addColorStop(colorScheme.colorStops[i]/colorScheme.maxValue, 
-            colorScheme.colors[i].toString());
+                colorScheme.colors[i].toString());
         }
     }
     else {
@@ -152,8 +151,8 @@ function drawColorMap(canvas, colorScheme) {
     //writing text
     context.fillStyle = "rgb(0,0,0)";
     context.font = "12pt sans-serif";
-    var maxString = String(parseInt(colorScheme.maxValue));
-    var minString = String(parseInt(colorScheme.minValue));
+    var maxString = String(maxValue);
+    var minString = String(minValue);
     context.fillText(minString, 0, height/2+20);
     context.fillText(maxString, width-9*maxString.length, height/2+20);
 }
