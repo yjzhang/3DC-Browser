@@ -135,11 +135,14 @@ function reloadObject(text, oldObject) {
     splineObject = new THREE.Line(geometry, material);
     scene.add(splineObject);
     // draw color map
-    drawColorMap(document.getElementById("colormap-canvas"), colorMap, 1, -1);
+    if (colorValues)
+        drawColorMap(document.getElementById("colormap-canvas"), colorMap, max(colorValues), min(colorValues));
+    else
+        drawColorMap(document.getElementById("colormap-canvas"), colorMap, 1, -1);
     return splineObject;
 }
 
-function updateColors(newValues, oldObject) {
+function updateColors(newValues) {
     colorValues = newValues;
     if (newValues != null && newValues.length == geometry.vertices.length) {
         colorValues = newValues;
@@ -148,20 +151,11 @@ function updateColors(newValues, oldObject) {
         colorValues = newValues.slice(0, geometry.vertices.length);
         colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
     }
-    console.log("removing new object")
-    scene.remove(oldObject);
-    geometry = oldObject.geometry;
-    geometry.vertexColors = colors;
-    geometry.colors = colors;
-    console.log("adding new object");
-    splineObject = new THREE.Line(geometry, oldObject.material);
-    scene.add(splineObject);
-    return splineObject;
 }
 
 // Testing
-var text_init = "5\n0.566046 0.297772 0.928499\n0.610989 0.358840 0.944009\n0.702651 0.392072 0.915918\n0.788991 0.373088 0.865537\n0.885824 0.423299 0.798283\n0.938226 0.431045 0.807664\n0.979563 0.436933 0.850140\n0.879564 0.392228 0.872330\n0.986126 0.514608 0.806436\n1.014283 0.272586 0.776961\n1.023788 0.293796 0.818363\n1.070421 0.368948 0.809370\n1.111069 0.396415 0.776139\n1.173737 0.444256 0.861438\n1.197271 0.408099 0.874555\n1.138319 0.335163 0.959901\n1.068201 0.324114 0.975166\n0.991536 0.322119 0.996538\n0.893452 0.358959 0.987836\n0.827682 0.372347 0.959612\n0.741301 0.335776 0.994867";
-var splineObject = reloadObject(text_init, null);
+objectText = "5\n0.566046 0.297772 0.928499\n0.610989 0.358840 0.944009\n0.702651 0.392072 0.915918\n0.788991 0.373088 0.865537\n0.885824 0.423299 0.798283\n0.938226 0.431045 0.807664\n0.979563 0.436933 0.850140\n0.879564 0.392228 0.872330\n0.986126 0.514608 0.806436\n1.014283 0.272586 0.776961\n1.023788 0.293796 0.818363\n1.070421 0.368948 0.809370\n1.111069 0.396415 0.776139\n1.173737 0.444256 0.861438\n1.197271 0.408099 0.874555\n1.138319 0.335163 0.959901\n1.068201 0.324114 0.975166\n0.991536 0.322119 0.996538\n0.893452 0.358959 0.987836\n0.827682 0.372347 0.959612\n0.741301 0.335776 0.994867";
+var splineObject = reloadObject(objectText, null);
 camera.position.z = 5;
 
 // 3. Setting up mouse interactions

@@ -55,7 +55,7 @@ function makeMultiColor(value, min, max, colorScheme) {
     var colorStops = [];
     for (var i = 0; i<colorScheme.colors.length; i++) {
         colorStops = 
-            colorStops.concat(i*(max-min)/(colors.length-1));
+            colorStops.concat(min + i*(max - min)/(colors.length-1));
     }
     for (var i = 1; i<colorScheme.colors.length; i++) {
         if (value <= colorStops[i]+0.01 &&  value >= colorStops[i-1]) {
@@ -133,6 +133,7 @@ function makeColors(heatMap, colorScheme) {
 * */
 function drawColorMap(canvas, colorScheme, maxValue, minValue) {
     var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
     var width = canvas.width;
     var height = canvas.height;
     var gradient = context.createLinearGradient(0, 0, width, 0);

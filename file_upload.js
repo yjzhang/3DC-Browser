@@ -8,6 +8,7 @@ function handleFileSelect(evt) {
     var r = new FileReader();
     r.onload = function(e) {
         var fileData = e.target.result;
+        objectText = fileData;
         splineObject = reloadObject(fileData, splineObject);
     };
     r.readAsText(f);
@@ -30,8 +31,8 @@ function handleBedfileSelect(evt) {
         var excludedBins = document.getElementById("excluded").value;
         excludedBins = excludedBins.split(",").map(function (x) Number(x));
         var newValues = readBedfile(fileData, res, chrom, "eigenvalue", null, excludedBins);
-        splineObject = updateColors(newValues, splineObject);
-        //splineObject = reloadObject(fileData, splineObject);
+        updateColors(newValues);
+        splineObject = reloadObject(objectText, splineObject);
     };
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.
