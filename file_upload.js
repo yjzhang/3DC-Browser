@@ -49,8 +49,10 @@ function updateOptions(evt) {
     var excludedBins = document.getElementById("excluded").value;
     tubeRadius = document.getElementById("radius").value
     var newExcludedBins = excludedBins.split(",").map(function (x) Number(x));
-    var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, newExcludedBins);
-    updateColors(newValues);
+    if (bedText) {
+        var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, newExcludedBins);
+        updateColors(newValues);
+    }
     splineObject = reloadObject(objectText, splineObject);
 }
 
