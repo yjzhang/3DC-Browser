@@ -47,12 +47,14 @@ function updateOptions(evt) {
     var res = Number(document.getElementById("resolution").value);
     var chrom = document.getElementById("chrom").value;
     var excludedBins = document.getElementById("excluded").value;
-    tubeRadius = document.getElementById("radius").value
+    tubeRadius = document.getElementById("radius").value;
+    var selectedColorScheme = document.getElementById("color-scheme").value;
     var newExcludedBins = excludedBins.split(",").map(function (x) Number(x));
     if (bedText) {
         var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, newExcludedBins);
         updateColors(newValues);
     }
+    colorMap = colorSchemes[selectedColorScheme];
     splineObject = reloadObject(objectText, splineObject);
 }
 
