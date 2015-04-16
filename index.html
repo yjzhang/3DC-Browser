@@ -37,6 +37,18 @@
                     <p>
                     Tube radius: <input type="float" id="radius" name="radius" value="0.01"/>
                     <p>
+                    Color Scheme: 
+                    <select name="colorSchemeSelection">
+                        <option value="BLUE_GREEN_YELLOW_RED_SCHEME">Blue-green-yellow-red</option>
+                        <option value="BLUE_WHITE_RED_SCHEME" selected="selected">Blue-white-red</option>
+                        <option value="WHITE_BLUE_SCHEME">Blue-white</option>
+                        <option value="BLUE_GREEN_SCHEME">Green-blue</option>
+                        <option value="BLUE_RED_SCHEME">Red-blue</option>
+                        <option value="GREEN_RED_SCHEME">Red-green</option>
+                        <option value="YELLOW_RED_SCHEME">Red-yellow</option>
+                        <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
+                    </select>
+                    <p>
                     <button name="update" onclick="javascript:updateOptions();">Update</button>
                 </div>
             </div>

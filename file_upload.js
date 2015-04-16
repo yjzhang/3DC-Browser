@@ -30,7 +30,7 @@ function handleBedfileSelect(evt) {
         var fileData = e.target.result;
         bedText = fileData;
         var excludedBins = document.getElementById("excluded").value;
-        excludedBins = excludedBins.split(",").map(function (x) Number(x));
+        excludedBins = excludedBins.split(",").map(function (x) {return Number(x)});
         var newValues = readBedfile(fileData, res, chrom, "eigenvalue", null, excludedBins);
         updateColors(newValues);
         splineObject = reloadObject(objectText, splineObject);
@@ -48,8 +48,8 @@ function updateOptions(evt) {
     var chrom = document.getElementById("chrom").value;
     var excludedBins = document.getElementById("excluded").value;
     tubeRadius = document.getElementById("radius").value
-    excludedBins = excludedBins.split(",").map(function (x) Number(x));
-    var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, excludedBins);
+    var newExcludedBins = excludedBins.split(",").map(function (x) Number(x));
+    var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, newExcludedBins);
     updateColors(newValues);
     splineObject = reloadObject(objectText, splineObject);
 }

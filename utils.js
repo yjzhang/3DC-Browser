@@ -19,19 +19,19 @@ function range(start, stop, step) {
 }
 
 function min(array) {
-    return array.reduce(function (x, y) ((y < x) ? y : x));
+    return array.reduce(function (x, y) {return (y < x) ? y : x});
 }
 
 function max(array) {
-    return array.reduce(function (x, y) ((y > x) ? y : x));
+    return array.reduce(function (x, y) {return (y > x) ? y : x});
 }
 
 function contains(array, value) {
-    return array.reduce(function (x, y) (x | (y==value)), false); 
+    return array.reduce(function (x, y) {return x | (y==value)}, false); 
 }
 
 function sum(array) {
-    return array.reduce(function (x, y) (x+y));
+    return array.reduce(function (x, y) {return x+y});
 }
 
 function mean(array) {

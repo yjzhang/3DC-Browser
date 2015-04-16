@@ -177,10 +177,8 @@ function updateColors(newValues) {
     colorValues = newValues;
     if (newValues != null && newValues.length == all_coords.length) {
         colorValues = newValues;
-        colors = coordsToColors(all_coords.length, colorMap, colorValues);
-    } else {
+    } else if (newValues.length > all_coords.length) {
         colorValues = newValues.slice(0, all_coords.length);
-        colors = coordsToColors(all_coords.length, colorMap, colorValues);
     }
 }
 
@@ -230,6 +228,9 @@ window.addEventListener( 'resize', onWindowResize, false );
  *  - removed_bins - the bins that should be removed...
  * */
 function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) {
+    if (bedfile.length == 0) {
+        return [];
+    }
     var values = [];
     var bedfile_split = bedfile.trim().split("\n");
     var line1 = bedfile_split[0].split(/\s+/);
