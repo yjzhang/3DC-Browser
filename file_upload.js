@@ -47,6 +47,7 @@ function updateOptions(evt) {
     var res = Number(document.getElementById("resolution").value);
     var chrom = document.getElementById("chrom").value;
     var excludedBins = document.getElementById("excluded").value;
+    tubeRadius = document.getElementById("radius").value
     excludedBins = excludedBins.split(",").map(function (x) Number(x));
     var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, excludedBins);
     updateColors(newValues);

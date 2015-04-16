@@ -28,23 +28,31 @@ controls.keys = [ 65, 83, 68 ];
 controls.addEventListener( 'change', render );
 
 // adding lights
-var light1 = new THREE.DirectionalLight( 0xffffff , 1); // soft white light 
-light1.position.set(0, 1, 0);
+var light1 = new THREE.AmbientLight( 0x404040 , 0.5); // soft white light 
+light1.position.set(0, 0, 0);
 scene.add( light1 );
-var light2 = new THREE.DirectionalLight( 0xffffff , 0.7); // soft white light 
+var light2 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
 light2.position.set(1, 0, 0);
 scene.add( light2 );
-var light3 = new THREE.DirectionalLight( 0xffffff , 0.7); // soft white light 
+var light3 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
 light3.position.set(0, 0, 1);
 scene.add( light3 );
-
-
+var light4 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+light4.position.set(0, 0, -1);
+scene.add( light4 );
+var light5 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+light5.position.set(0, -1, 0);
+scene.add( light5 );
+var light6 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+light6.position.set(-1, 0, 0);
+scene.add( light6 );
 // 2. setting up the geometry...
 
 // global parameters
 var objectText = "";
 var bedText = "";
 var tubeRadius = 0.01;
+var tubeSegments = 16;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
 var colorValues = null;
@@ -108,6 +116,26 @@ function coordsToLineGeometry(all_coords) {
 }
 
 /**
+ * Sets the colors for each face, based on a color map... 
+ * colors = 1 color per point
+ * geometry: TubeGeometry with 8 segments/point (16 faces per point)
+ * */
+function setFaceColors(geometry, colors) {
+    for(var i = 0; i<geometry.faces.length; i+=tubeSegments*2) {
+        for(var j = 0; j<tubeSegments*2; j++) {
+            var face = geometry.faces[i+j];
+            var ci = i/(tubeSegments*2);
+            face.color = colors[ci];
+            face.vertexColors[0] = colors[ci];
+            face.vertexColors[1] = colors[ci];
+            face.vertexColors[2] = colors[ci];
+            face.vertexColors[3] = colors[ci];
+        }
+    }
+    return geometry
+}
+
+/**
  * Given a text file, this generates a geometry and replaces oldObject.
  * */
 function reloadObject(text, oldObject) {
@@ -116,41 +144,43 @@ function reloadObject(text, oldObject) {
     console.log(all_coords);
     curve = new THREE.SplineCurve3(all_coords);
     console.log(curve);
-    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
-    //      8, false); 
-    geometry = coordsToLineGeometry(all_coords);
-    if (colorValues != null && colorValues.length == geometry.vertices.length) {
-        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+    geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
+          tubeSegments, false); 
+    //geometry = coordsToLineGeometry(all_coords);
+    if (colorValues != null && colorValues.length == all_coords.length) {
+        colors = coordsToColors(all_coords.length, colorMap, colorValues);
     } else {
-        colors = coordsToColors(geometry.vertices.length, colorMap, null);
+        colors = coordsToColors(all_coords.length, colorMap, null);
     }
     geometry.colors = colors;
-    geometry.vertexColors = colors;
+    //geometry.vertexColors = colors;
+    setFaceColors(geometry, colors);
     console.log(geometry);
-    //material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:1, 
-    //      shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
-    material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, 
-        linewidth: 3, vertexColors: THREE.VertexColors } );
+    material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
+          shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
+    //material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, 
+    //    linewidth: 3, vertexColors: THREE.VertexColors } );
     //Create the final Object3d to add to the scene 
-    //splineObject = new THREE.Mesh(geometry, material);
-    splineObject = new THREE.Line(geometry, material);
+    splineObject = new THREE.Mesh(geometry, material);
+    //splineObject = new THREE.Line(geometry, material);
     scene.add(splineObject);
     // draw color map
     if (colorValues)
         drawColorMap(document.getElementById("colormap-canvas"), colorMap, max(colorValues), min(colorValues));
     else
         drawColorMap(document.getElementById("colormap-canvas"), colorMap, 1, -1);
+    render();
     return splineObject;
 }
 
 function updateColors(newValues) {
     colorValues = newValues;
-    if (newValues != null && newValues.length == geometry.vertices.length) {
+    if (newValues != null && newValues.length == all_coords.length) {
         colorValues = newValues;
-        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+        colors = coordsToColors(all_coords.length, colorMap, colorValues);
     } else {
-        colorValues = newValues.slice(0, geometry.vertices.length);
-        colors = coordsToColors(geometry.vertices.length, colorMap, colorValues);
+        colorValues = newValues.slice(0, all_coords.length);
+        colors = coordsToColors(all_coords.length, colorMap, colorValues);
     }
 }
 
