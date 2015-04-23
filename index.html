@@ -1,56 +1,64 @@
 <html> 
     <head> 
-        <title>My first Three.js app</title> 
+        <title>3D Genome Viewer</title> 
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head> 
 
     <body> 
+
         <div class="float-top-group">
-            <div class="button-group">
-                Upload a structure file here:
-                <input type="file" id="files" name="files[]" multiple />
-            </div>
-            <div class="button-group">
-                Upload a bedfile here:
-                <input type="file" id="bedfiles" name="files[]" multiple />
-            </div>
-            <div class="button-group" >
-                <button name="toggle-controls" onclick="javascript:
-                    var c=document.getElementById('controls'); 
-                    if (c.style.display=='none') {
-                        c.style.display='block';
-                    } else c.style.display='none';">Show/Hide Controls</button>
-                <div id="controls" style="display:none;">
-                    <p>
-                    Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
-                    <p>
-                    Chromosome number/name: <input type="text" id="chrom" name="chrom" value="chr4"/>
-                    <p>
-                    Arm: 
-                    <select id="arm-select" name="arm">
-                        <option value="0" selected="selected">Both</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                    </select>
-                    <p>
-                    Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
-                    <p>
-                    Tube radius: <input type="float" id="radius" name="radius" value="0.01"/>
-                    <p>
-                    Color Scheme: 
-                    <select id="color-scheme" name="color-scheme">
-                        <option value="BLUE_GREEN_YELLOW_RED_SCHEME">Blue-green-yellow-red</option>
-                        <option value="BLUE_WHITE_RED_SCHEME" selected="selected">Blue-white-red</option>
-                        <option value="WHITE_BLUE_SCHEME">Blue-white</option>
-                        <option value="BLUE_GREEN_SCHEME">Green-blue</option>
-                        <option value="BLUE_RED_SCHEME">Red-blue</option>
-                        <option value="GREEN_RED_SCHEME">Red-green</option>
-                        <option value="YELLOW_RED_SCHEME">Red-yellow</option>
-                        <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
-                    </select>
-                    <p>
-                    <button name="update" onclick="javascript:updateOptions();">Update</button>
-                    <button name="resetCamera" onclick="javascript:resetCamera();">Reset Camera</button>
+            <button  name="toggle-controls" onclick="javascript:
+                var c=document.getElementById('controls'); 
+                if (c.style.display=='none') {
+                    c.style.display='block';
+                } else c.style.display='none';">Show/Hide Controls</button>
+            <div id="controls" style="display:none;">
+                <div class="button-group">
+                    Upload a structure file here:
+                    <input type="file" id="files" name="files[]" multiple />
+                </div>
+                <div class="button-group">
+                    Upload a bedfile here:
+                    <input type="file" id="bedfiles" name="files[]" multiple />
+                </div>
+                <div class="button-group" >
+                    <div id="controls-2" >
+                        <p>
+                        Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
+                        <p>
+                        Chromosome number/name: <input type="text" id="chrom" name="chrom" value="chr4"/>
+                        <p>
+                        Arm: 
+                        <select id="arm-select" name="arm">
+                            <option value="0" selected="selected">Both</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                        </select>
+                        <p>
+                        Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
+                        <p>
+                        Tube radius: <input type="float" id="radius" name="radius" value="0.01"/>
+                        <p>
+                        Color value column name: <input type="text" id="value-name" name="value-name" value="eigenvector"/>
+                        <p>
+                        Color Scheme: 
+                        <select id="color-scheme" name="color-scheme">
+                            <option value="BLUE_GREEN_YELLOW_RED_SCHEME">Blue-green-yellow-red</option>
+                            <option value="BLUE_WHITE_RED_SCHEME" selected="selected">Blue-white-red</option>
+                            <option value="WHITE_BLUE_SCHEME">Blue-white</option>
+                            <option value="BLUE_GREEN_SCHEME">Green-blue</option>
+                            <option value="BLUE_RED_SCHEME">Red-blue</option>
+                            <option value="GREEN_RED_SCHEME">Red-green</option>
+                            <option value="YELLOW_RED_SCHEME">Red-yellow</option>
+                            <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
+                        </select>
+                        <p>
+                        <button name="update" onclick="javascript:updateOptions();">Update</button>
+                        <button name="resetCamera" onclick="javascript:resetCamera(1);">Zoom 1</button>
+                        <button name="resetCamera2" onclick="javascript:resetCamera(2);">Zoom 2</button>
+                        <button name="resetCamera3" onclick="javascript:resetCamera(3);">Zoom 3</button>
+                        <button name="resetCamera4" onclick="javascript:resetCamera(4);">Zoom 4</button>
+                    </div>
                 </div>
             </div>
         </div>

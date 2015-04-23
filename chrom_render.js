@@ -31,19 +31,19 @@ controls.addEventListener( 'change', render );
 var light1 = new THREE.AmbientLight( 0x404040 , 0.5); // soft white light 
 light1.position.set(0, 0, 0);
 scene.add( light1 );
-var light2 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+var light2 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
 light2.position.set(1, 0, 0);
 scene.add( light2 );
-var light3 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+var light3 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
 light3.position.set(0, 0, 1);
 scene.add( light3 );
-var light4 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+var light4 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
 light4.position.set(0, 0, -1);
 scene.add( light4 );
-var light5 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+var light5 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
 light5.position.set(0, -1, 0);
 scene.add( light5 );
-var light6 = new THREE.DirectionalLight( 0xf0f0f0 , 0.7); // soft white light 
+var light6 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
 light6.position.set(-1, 0, 0);
 scene.add( light6 );
 // 2. setting up the geometry...
@@ -52,7 +52,7 @@ scene.add( light6 );
 var objectText = "";
 var bedText = "";
 var tubeRadius = 0.01;
-var tubeSegments = 16;
+var tubeSegments = 32;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
 var colorValues = null;
@@ -228,6 +228,7 @@ window.addEventListener( 'resize', onWindowResize, false );
  *  - removed_bins - the bins that should be removed...
  * */
 function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) {
+    console.log("readBedfile");
     if (bedfile.length == 0) {
         return [];
     }
@@ -249,10 +250,10 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
     for (var i = 0; i<bedfile_split.length; i++) {
         var line_values = bedfile_split[i].split(/\s+/);
         //console.log(line_values);
-        var chr = line_values[ldict.chr];
-        var start = line_values[ldict.start];
-        var end = line_values[ldict.end];
-        var val = line_values[ldict.eigenvector];
+        var chr = line_values[ldict.chr || 0];
+        var start = line_values[ldict.start || 1];
+        var end = line_values[ldict.end || 2];
+        var val = line_values[ldict[value_name] || line_values.length - 1];
         // TODO: something like bedtools intersect
         if (chr == chrom) {
             if (removed_bins != null && !contains(removed_bins, bin_id)) {
@@ -288,10 +289,14 @@ function onWindowResize() {
     render();
 }
 
-function resetCamera() {
+/**
+ * Resets the camera to its original position by re-generating all the global
+ * variables
+ * */
+function resetCamera(zoomSetting) {
     camera = new THREE.PerspectiveCamera(60, 
         window.innerWidth/window.innerHeight, 0.001, 1000);
-    camera.position.z = 5;
+    camera.position.z = 5*zoomSetting;
     //camera.lookAt(THREE.Vector3(0,0,0));
     camera.updateProjectionMatrix();
     controls = new THREE.TrackballControls( camera , renderer.domElement);

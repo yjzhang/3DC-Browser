@@ -30,8 +30,9 @@ function handleBedfileSelect(evt) {
         var fileData = e.target.result;
         bedText = fileData;
         var excludedBins = document.getElementById("excluded").value;
+        var columnName = document.getElementById("value-name").value;
         excludedBins = excludedBins.split(",").map(function (x) {return Number(x)});
-        var newValues = readBedfile(fileData, res, chrom, "eigenvalue", null, excludedBins);
+        var newValues = readBedfile(fileData, res, chrom, columnName, null, excludedBins);
         updateColors(newValues);
         splineObject = reloadObject(objectText, splineObject);
     };
@@ -50,8 +51,9 @@ function updateOptions(evt) {
     tubeRadius = document.getElementById("radius").value;
     var selectedColorScheme = document.getElementById("color-scheme").value;
     var newExcludedBins = excludedBins.split(",").map(function (x) Number(x));
+    var columnName = document.getElementById("value-name").value;
     if (bedText) {
-        var newValues = readBedfile(bedText, res, chrom, "eigenvalue", null, newExcludedBins);
+        var newValues = readBedfile(bedText, res, chrom, columnName, null, newExcludedBins);
         updateColors(newValues);
     }
     colorMap = colorSchemes[selectedColorScheme];
