@@ -334,5 +334,7 @@ function snapshot() {
     canvas.toBlob(function(blob) {
         // TODO
         // open a link in a new tab with the image
+        var url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
     });
 }

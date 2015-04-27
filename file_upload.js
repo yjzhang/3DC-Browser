@@ -50,7 +50,7 @@ function updateOptions(evt) {
     var excludedBins = document.getElementById("excluded").value;
     tubeRadius = document.getElementById("radius").value;
     var selectedColorScheme = document.getElementById("color-scheme").value;
-    var newExcludedBins = excludedBins.split(",").map(function (x) Number(x));
+    var newExcludedBins = excludedBins.split(",").map(function(x) {return Number(x);});
     var columnName = document.getElementById("value-name").value;
     if (bedText) {
         var newValues = readBedfile(bedText, res, chrom, columnName, null, newExcludedBins);
@@ -58,7 +58,7 @@ function updateOptions(evt) {
     }
     colorMap = colorSchemes[selectedColorScheme];
     splineObject = reloadObject(objectText, splineObject);
-    resetCamera(document.getElementById('zoom-number').value);
+    //resetCamera(document.getElementById('zoom-number').value);
 }
 
 document.getElementById('files').addEventListener('change', 

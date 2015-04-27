@@ -37,7 +37,8 @@ canvas {
 .bottom-group {
     position: absolute;
     left: 0;
-    float:bottom
+    bottom: 0;
+    float: bottom;
     padding: 0.5em;
     margin: 0.5em; 
 }

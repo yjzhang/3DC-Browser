@@ -58,6 +58,7 @@
                             step=0.1 value="1.0" onchange="javascript:resetCamera(document.getElementById('zoom-number').value);"/>
                         <p>
                         <button name="update" onclick="javascript:updateOptions();">Update</button>
+                        <button name="resetCamera" onclick="javascript:resetCamera(document.getElementById('zoom-number').value);">Update Zoom</button>
                     </div>
                 </div>
             </div>
@@ -65,6 +66,9 @@
 
         <div class="right-group">
             <canvas id="colormap-canvas"></canvas>
+        </div>
+        <div class="bottom-group">
+            <button name="Screenshot" onclick="javascript:snapshot();">Snapshot</button>
         </div>
         <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
         <script src="js/three.min.js"></script> 
