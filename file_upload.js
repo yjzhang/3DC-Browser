@@ -58,7 +58,7 @@ function updateOptions(evt) {
     }
     colorMap = colorSchemes[selectedColorScheme];
     splineObject = reloadObject(objectText, splineObject);
-    resetCamera(document.getElementById('zoom-number').value;
+    resetCamera(document.getElementById('zoom-number').value);
 }
 
 document.getElementById('files').addEventListener('change', 
