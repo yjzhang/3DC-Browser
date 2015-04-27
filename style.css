@@ -11,6 +11,7 @@ canvas {
 .float-top-group {
 	position: absolute;
 	float: top;
+    margin: 0.5em;
 }
 
 /* A bunch of things surrounded by a border */
@@ -28,6 +29,15 @@ canvas {
     position: absolute;
     right: 0;
     background-color: #dcdcdc;
+    padding: 0.5em;
+    margin: 0.5em; 
+}
+
+
+.bottom-group {
+    position: absolute;
+    left: 0;
+    float:bottom
     padding: 0.5em;
     margin: 0.5em; 
 }

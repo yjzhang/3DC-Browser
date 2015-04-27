@@ -53,11 +53,12 @@
                             <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
                         </select>
                         <p>
+                        Zoom:
+                        <input type="number" name="zoom-number" id="zoom-number"
+                            step=0.1 value="1.0"/>
+                        <p>
                         <button name="update" onclick="javascript:updateOptions();">Update</button>
-                        <button name="resetCamera" onclick="javascript:resetCamera(1);">Zoom 1</button>
-                        <button name="resetCamera2" onclick="javascript:resetCamera(2);">Zoom 2</button>
-                        <button name="resetCamera3" onclick="javascript:resetCamera(3);">Zoom 3</button>
-                        <button name="resetCamera4" onclick="javascript:resetCamera(4);">Zoom 4</button>
+                        <button name="resetCamera" onclick="javascript:resetCamera(document.getElementById('zoom-number').value);">Update Zoom</button>
                     </div>
                 </div>
             </div>

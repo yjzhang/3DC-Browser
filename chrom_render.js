@@ -326,3 +326,13 @@ function render() {
     renderer.render( scene, camera ); 
 } 
 
+/**
+ * Takes a screenshot...
+ * */
+function snapshot() {
+    var canvas = renderer.domElement;
+    canvas.toBlob(function(blob) {
+        // TODO
+        // open a link in a new tab with the image
+    });
+}
