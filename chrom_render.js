@@ -33,21 +33,10 @@ controls.addEventListener( 'change', render );
 var light1 = new THREE.AmbientLight( 0x404040 , 0.5); // soft white light 
 light1.position.set(0, 0, 0);
 scene.add( light1 );
-var light2 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
-light2.position.set(1, 0, 0);
+var light2 = new THREE.DirectionalLight( 0xf0f0f0 , 0.9); // soft white light 
+light2.position.set(camera.position.x, camera.position.y, camera.position.z);
 scene.add( light2 );
-var light3 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
-light3.position.set(0, 0, 1);
-scene.add( light3 );
-var light4 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
-light4.position.set(0, 0, -1);
-scene.add( light4 );
-var light5 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
-light5.position.set(0, -1, 0);
-scene.add( light5 );
-var light6 = new THREE.DirectionalLight( 0xf0f0f0 , 0.5); // soft white light 
-light6.position.set(-1, 0, 0);
-scene.add( light6 );
+
 // 2. setting up the geometry...
 
 // global parameters
@@ -325,6 +314,7 @@ function animate() {
 }
 
 function render() { 
+    light2.position.set(camera.position.x, camera.position.y, camera.position.z);
     renderer.render( scene, camera ); 
 } 
 
