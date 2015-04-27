@@ -6,7 +6,9 @@ var w = window.innerWidth;
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, 
         w/h, 0.001, 1000);
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({
+        preserveDrawingBuffer: true 
+});
 renderer.setSize(w, h);
 
 document.body.appendChild(renderer.domElement);
