@@ -55,10 +55,9 @@
                         <p>
                         Zoom:
                         <input type="number" name="zoom-number" id="zoom-number"
-                            step=0.1 value="1.0"/>
+                            step=0.1 value="1.0" onchange="javascript:resetCamera(document.getElementById('zoom-number').value);"/>
                         <p>
                         <button name="update" onclick="javascript:updateOptions();">Update</button>
-                        <button name="resetCamera" onclick="javascript:resetCamera(document.getElementById('zoom-number').value);">Update Zoom</button>
                     </div>
                 </div>
             </div>
