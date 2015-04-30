@@ -10,7 +10,7 @@ var renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: false 
 });
 renderer.setSize(w, h);
-renderer.setClearColor(0xc0c0c0);
+renderer.setClearColor("rgb(60,60,60)");
 
 document.body.appendChild(renderer.domElement);
 
