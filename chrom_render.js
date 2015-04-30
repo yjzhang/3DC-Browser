@@ -10,7 +10,7 @@ var renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: false 
 });
 renderer.setSize(w, h);
-renderer.setClearColor("rgb(60,60,60)");
+renderer.setClearColor("rgb(100,100,100)");
 
 document.body.appendChild(renderer.domElement);
 
@@ -137,12 +137,6 @@ function reloadObject(text, oldObject) {
     }
     all_coords = pointsToCurve(text);
     console.log(all_coords);
-    //curve = new THREE.SplineCurve3(all_coords);
-    //curve = new LinearCurve(all_coords);
-    //console.log(curve);
-    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
-    //      tubeSegments, false); 
-    //geometry = coordsToLineGeometry(all_coords);
     geometry = constructGeometryArray(all_coords, tubeRadius, tubeSegments);
     if (colorValues != null && colorValues.length == all_coords.length) {
         colors = coordsToColors(all_coords.length, colorMap, colorValues);
@@ -155,7 +149,7 @@ function reloadObject(text, oldObject) {
     console.log(geometry);
     material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
           shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
-    splineObject = addGeometriesToScene(geometry, material, scene);
+    splineObject = addGeometriesToScene(all_coords, geometry, material, scene);
     // draw color map
     if (colorValues)
         drawColorMap(document.getElementById("colormap-canvas"), colorMap, max(colorValues), min(colorValues));
