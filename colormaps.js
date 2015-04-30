@@ -175,9 +175,9 @@ var YELLOW_RED_BLACK_SCHEME = new MultiColorScheme('', 0, 1000,
     new Color(255,0,0),
     new Color(0,0,0)]);
 var BLUE_WHITE_RED_SCHEME = new MultiColorScheme('', 0, 1000,
-        [new Color(255, 0, 0),
+        [new Color(0, 0, 255),
         new Color(255, 255, 255),
-        new Color(0, 0, 255)]);
+        new Color(255, 0, 0)]);
 var BLUE_GREEN_YELLOW_RED_SCHEME = new MultiColorScheme('', 0, 1000,
     [new Color(0, 0, 255),
     new Color(0, 255, 255),

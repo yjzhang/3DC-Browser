@@ -1,5 +1,6 @@
 <html> 
     <head> 
+        <meta charset="UTF-8"> 
         <title>3D Genome Viewer</title> 
         <link rel="stylesheet" type="text/css" href="style.css"/>
     </head> 
@@ -37,7 +38,7 @@
                         <p>
                         Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
                         <p>
-                        Tube radius: <input type="float" id="radius" name="radius" value="0.01"/>
+                        Tube radius: <input type="number" id="radius" name="radius" step=0.01 value="0.01"/>
                         <p>
                         Color value column name: <input type="text" id="value-name" name="value-name" value="eigenvector"/>
                         <p>
@@ -65,7 +66,7 @@
         </div>
 
         <div class="right-group">
-            <canvas id="colormap-canvas"></canvas>
+            <canvas id="colormap-canvas" width=300 height=150></canvas>
         </div>
         <div class="bottom-group">
             <button name="Screenshot" onclick="javascript:snapshot();">Snapshot</button>
@@ -73,6 +74,7 @@
         <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
         <script src="js/three.min.js"></script> 
         <script src="js/TrackballControls.js"></script> 
+        <script src="linear_curve.js"></script> 
         <script src="colormaps.js"></script> 
         <script src="utils.js"></script> 
         <script src="chrom_render.js"></script> 

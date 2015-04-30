@@ -7,9 +7,10 @@ var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(60, 
         w/h, 0.001, 1000);
 var renderer = new THREE.WebGLRenderer({
-        preserveDrawingBuffer: true 
+        preserveDrawingBuffer: false 
 });
 renderer.setSize(w, h);
+renderer.setClearColor(0xc0c0c0);
 
 document.body.appendChild(renderer.domElement);
 
@@ -47,6 +48,7 @@ var tubeSegments = 32;
 var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
 var colorValues = null;
+var urlData = null;
 
 /**
  * Given a string of coords, this returns an array of Vector3 objects.
@@ -130,31 +132,30 @@ function setFaceColors(geometry, colors) {
  * Given a text file, this generates a geometry and replaces oldObject.
  * */
 function reloadObject(text, oldObject) {
-    scene.remove(oldObject);
+    if (oldObject) {
+        removeObjectsFromScene(oldObject, scene);
+    }
     all_coords = pointsToCurve(text);
     console.log(all_coords);
-    curve = new THREE.SplineCurve3(all_coords);
-    console.log(curve);
-    geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
-          tubeSegments, false); 
+    //curve = new THREE.SplineCurve3(all_coords);
+    //curve = new LinearCurve(all_coords);
+    //console.log(curve);
+    //geometry = new THREE.TubeGeometry(curve, all_coords.length, tubeRadius, 
+    //      tubeSegments, false); 
     //geometry = coordsToLineGeometry(all_coords);
+    geometry = constructGeometryArray(all_coords, tubeRadius, tubeSegments);
     if (colorValues != null && colorValues.length == all_coords.length) {
         colors = coordsToColors(all_coords.length, colorMap, colorValues);
     } else {
         colors = coordsToColors(all_coords.length, colorMap, null);
     }
-    geometry.colors = colors;
+    //geometry.colors = colors;
     //geometry.vertexColors = colors;
-    setFaceColors(geometry, colors);
+    setGeometryColors(geometry, colors, tubeSegments);
     console.log(geometry);
     material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
           shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
-    //material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, 
-    //    linewidth: 3, vertexColors: THREE.VertexColors } );
-    //Create the final Object3d to add to the scene 
-    splineObject = new THREE.Mesh(geometry, material);
-    //splineObject = new THREE.Line(geometry, material);
-    scene.add(splineObject);
+    splineObject = addGeometriesToScene(geometry, material, scene);
     // draw color map
     if (colorValues)
         drawColorMap(document.getElementById("colormap-canvas"), colorMap, max(colorValues), min(colorValues));
@@ -179,24 +180,8 @@ var splineObject = reloadObject(objectText, null);
 camera.position.z = 5;
 
 // 3. Setting up mouse interactions
-// if the mouse is down, we enter into a mode where moving the mouse would
-// change the camera position.
-var mouseX = 0;
-var mouseY = 0;
-var mouseDown = false;
+// No need
 
-function onMouseMove( event ) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-}
-
-function onMouseDown(event) {
-    mouseDown = true;
-}
-
-function onMouseUp(event) {
-    mouseDown = false;
-}
 // registering mouse events - unnecessary since this is all done in control
 //renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
 //renderer.domElement.addEventListener( 'mousedown', onMouseDown, false );
@@ -205,7 +190,6 @@ window.addEventListener( 'resize', onWindowResize, false );
 
 
 // 4. Setting up data tracks / colors
-// TODO: implement this
 
 /**
  * Given a bedfile (as a string), this should return a list of values...
@@ -236,7 +220,7 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
     console.log(line1);
     console.log(ldict);
     var current_bin = [];
-    var bin_id = 0;
+    var bin_id = 1;
     var bin_start = 0;
     for (var i = 0; i<bedfile_split.length; i++) {
         var line_values = bedfile_split[i].split(/\s+/);
@@ -322,11 +306,8 @@ function render() {
  * Takes a screenshot...
  * */
 function snapshot() {
-    var canvas = renderer.domElement;
-    canvas.toBlob(function(blob) {
-        // TODO
-        // open a link in a new tab with the image
-        var url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-    });
+    render();
+    urlData = renderer.domElement.toDataURL();
+    window.open(urlData, "_blank");
+
 }
