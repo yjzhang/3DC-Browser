@@ -9,6 +9,7 @@ function handleFileSelect(evt) {
     r.onload = function(e) {
         var fileData = e.target.result;
         objectText = fileData;
+        graphicsLevel = document.getElementById("graphics-level").value;
         splineObject = reloadObject(fileData, splineObject);
     };
     r.readAsText(f);
@@ -31,8 +32,10 @@ function handleBedfileSelect(evt) {
         bedText = fileData;
         var excludedBins = document.getElementById("excluded").value;
         var columnName = document.getElementById("value-name").value;
+        var arm = Number(document.getElementById("arm-select").value);
         excludedBins = excludedBins.split(",").map(function (x) {return Number(x)});
-        var newValues = readBedfile(fileData, res, chrom, columnName, null, excludedBins);
+        graphicsLevel = document.getElementById("graphics-level").value;
+        var newValues = readBedfile(fileData, res, chrom, columnName, arm, excludedBins);
         updateColors(newValues);
         splineObject = reloadObject(objectText, splineObject);
     };
@@ -52,8 +55,10 @@ function updateOptions(evt) {
     var selectedColorScheme = document.getElementById("color-scheme").value;
     var newExcludedBins = excludedBins.split(",").map(function(x) {return Number(x);});
     var columnName = document.getElementById("value-name").value;
+    var arm = Number(document.getElementById("arm-select").value);
+    graphicsLevel = document.getElementById("graphics-level").value;
     if (bedText) {
-        var newValues = readBedfile(bedText, res, chrom, columnName, null, newExcludedBins);
+        var newValues = readBedfile(bedText, res, chrom, columnName, arm, newExcludedBins);
         updateColors(newValues);
     }
     colorMap = colorSchemes[selectedColorScheme];

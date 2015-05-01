@@ -49,6 +49,11 @@ var colorMap = BLUE_WHITE_RED_SCHEME;
 var colors = [];
 var colorValues = null;
 var urlData = null;
+var graphicsOptions = {
+    low: {tubeSegments: 8, sphereWidthSegments: 4, sphereHeightSegments: 4},
+    medium: {tubeSegments: 32, sphereWidthSegments: 8, sphereHeightSegments: 6},
+    high: {tubeSegments: 64, sphereWidthSegments: 16, sphereHeightSegments: 12}};
+var graphicsLevel = "medium";
 
 /**
  * Given a string of coords, this returns an array of Vector3 objects.
@@ -97,38 +102,6 @@ function coordsToColors(num_points, colorScheme, values) {
 }
 
 /**
- * Creates a Geometry from the given list of coords
- * */
-function coordsToLineGeometry(all_coords) {
-    var geometry = new THREE.Geometry();
-    for (var i in all_coords) {
-        var c = all_coords[i];
-        geometry.vertices.push(c);
-    }
-    return geometry;
-}
-
-/**
- * Sets the colors for each face, based on a color map... 
- * colors = 1 color per point
- * geometry: TubeGeometry with 8 segments/point (16 faces per point)
- * */
-function setFaceColors(geometry, colors) {
-    for(var i = 0; i<geometry.faces.length; i+=tubeSegments*2) {
-        for(var j = 0; j<tubeSegments*2; j++) {
-            var face = geometry.faces[i+j];
-            var ci = i/(tubeSegments*2);
-            face.color = colors[ci];
-            face.vertexColors[0] = colors[ci];
-            face.vertexColors[1] = colors[ci];
-            face.vertexColors[2] = colors[ci];
-            face.vertexColors[3] = colors[ci];
-        }
-    }
-    return geometry
-}
-
-/**
  * Given a text file, this generates a geometry and replaces oldObject.
  * */
 function reloadObject(text, oldObject) {
@@ -137,7 +110,9 @@ function reloadObject(text, oldObject) {
     }
     all_coords = pointsToCurve(text);
     console.log(all_coords);
-    geometry = constructGeometryArray(all_coords, tubeRadius, tubeSegments);
+    var g = graphicsOptions[graphicsLevel];
+    geometry = constructGeometryArray(all_coords, tubeRadius, 
+            g.tubeSegments, g.sphereWidthSegments, g.sphereHeightSegments);
     if (colorValues != null && colorValues.length == all_coords.length) {
         colors = coordsToColors(all_coords.length, colorMap, colorValues);
     } else {
@@ -145,7 +120,7 @@ function reloadObject(text, oldObject) {
     }
     //geometry.colors = colors;
     //geometry.vertexColors = colors;
-    setGeometryColors(geometry, colors, tubeSegments);
+    setGeometryColors(geometry, colors, g.tubeSegments);
     console.log(geometry);
     material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
           shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
@@ -159,6 +134,9 @@ function reloadObject(text, oldObject) {
     return splineObject;
 }
 
+/**
+ * simple check to update the color values...
+ * */
 function updateColors(newValues) {
     colorValues = newValues;
     if (newValues != null && newValues.length == all_coords.length) {
@@ -167,12 +145,6 @@ function updateColors(newValues) {
         colorValues = newValues.slice(0, all_coords.length);
     }
 }
-
-// Testing
-objectText = "5\n0.566046 0.297772 0.928499\n0.610989 0.358840 0.944009\n0.702651 0.392072 0.915918\n0.788991 0.373088 0.865537\n0.885824 0.423299 0.798283\n0.938226 0.431045 0.807664\n0.979563 0.436933 0.850140\n0.879564 0.392228 0.872330\n0.986126 0.514608 0.806436\n1.014283 0.272586 0.776961\n1.023788 0.293796 0.818363\n1.070421 0.368948 0.809370\n1.111069 0.396415 0.776139\n1.173737 0.444256 0.861438\n1.197271 0.408099 0.874555\n1.138319 0.335163 0.959901\n1.068201 0.324114 0.975166\n0.991536 0.322119 0.996538\n0.893452 0.358959 0.987836\n0.827682 0.372347 0.959612\n0.741301 0.335776 0.994867";
-var splineObject = reloadObject(objectText, null);
-camera.position.z = 5;
-
 // 3. Setting up mouse interactions
 // No need
 
@@ -194,7 +166,7 @@ window.addEventListener( 'resize', onWindowResize, false );
  *  - value_name - the name of the header corresponding to the value that
  *    should be plotted.
  *  - arm - no use for now
- *  - removed_bins - the bins that should be removed...
+ *  - removed_bins - the bins that should be removed - an array of ints
  * */
 function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) {
     console.log("readBedfile");
@@ -216,15 +188,31 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
     var current_bin = [];
     var bin_id = 1;
     var bin_start = 0;
+    var selectedArm = 0 || arm;
+    // default value for ldict - position of each column
+    ldict.chr = ldict.chr || 0;
+    ldict.start = ldict.start || 1;
+    ldict.end = ldict.end || 2;
+    if (selectedArm != 0 && ldict.arm == undefined) {
+        console.log("Bedfile contains no arm information, ignoring");
+        selectedArm = 0;
+    }
+    ldict[value_name] = ldict[value_name] || (line_values.length - 1);
     for (var i = 0; i<bedfile_split.length; i++) {
         var line_values = bedfile_split[i].split(/\s+/);
         //console.log(line_values);
-        var chr = line_values[ldict.chr || 0];
-        var start = line_values[ldict.start || 1];
-        var end = line_values[ldict.end || 2];
-        var val = line_values[ldict[value_name] || line_values.length - 1];
+        var chr = line_values[ldict.chr];
         // TODO: something like bedtools intersect
         if (chr == chrom) {
+            if (selectedArm != 0) {
+                var bin_arm = line.values[ldict.arm];
+                if (bin_arm != selectedArm) {
+                    continue;
+                }
+            }
+            var start = line_values[ldict.start];
+            var end = line_values[ldict.end];
+            var val = line_values[ldict[value_name]];
             if (removed_bins != null && !contains(removed_bins, bin_id)) {
                 var bin_val = Number(val);
                 if (end-start < resolution) {
@@ -305,3 +293,12 @@ function snapshot() {
     window.open(urlData, "_blank");
 
 }
+
+
+// Running
+objectText = "5\n0.566046 0.297772 0.928499\n0.610989 0.358840 0.944009\n0.702651 0.392072 0.915918\n0.788991 0.373088 0.865537\n0.885824 0.423299 0.798283\n0.938226 0.431045 0.807664\n0.979563 0.436933 0.850140\n0.879564 0.392228 0.872330\n0.986126 0.514608 0.806436\n1.014283 0.272586 0.776961\n1.023788 0.293796 0.818363\n1.070421 0.368948 0.809370\n1.111069 0.396415 0.776139\n1.173737 0.444256 0.861438\n1.197271 0.408099 0.874555\n1.138319 0.335163 0.959901\n1.068201 0.324114 0.975166\n0.991536 0.322119 0.996538\n0.893452 0.358959 0.987836\n0.827682 0.372347 0.959612\n0.741301 0.335776 0.994867";
+
+var splineObject = reloadObject(objectText, null);
+camera.position.z = 5;
+
+

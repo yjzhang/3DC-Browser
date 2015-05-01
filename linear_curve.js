@@ -2,7 +2,8 @@
 // instead of having a bunch of points, how about let's just use an
 // array of geometries? Have a whole ton of LineCurve3s, one for each line
 // segment.
-function constructGeometryArray(points, tubeRadius, tubeSegments) {
+function constructGeometryArray(points, tubeRadius, tubeSegments,
+        sphereWidthSegments, sphereHeightSegments) {
     var geometries = [];
     var balls = []
     for (var i = 0; i<points.length-1; i++) {
@@ -11,7 +12,8 @@ function constructGeometryArray(points, tubeRadius, tubeSegments) {
         var c = new THREE.LineCurve3(p, p2);
         var g = new THREE.TubeGeometry(c, 1, tubeRadius, tubeSegments, false);
         geometries.push(g);
-        var b = new THREE.SphereGeometry(tubeRadius, 8, 6);
+        var b = new THREE.SphereGeometry(tubeRadius, sphereWidthSegments, 
+                sphereHeightSegments);
         balls.push(b);
     }
     var b = new THREE.SphereGeometry(tubeRadius);

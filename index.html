@@ -38,7 +38,7 @@
                         <p>
                         Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
                         <p>
-                        Tube radius: <input type="number" id="radius" name="radius" step=0.01 value="0.01"/>
+                        Tube radius: <input type="number" id="radius" name="radius" step=0.001 value="0.01"/>
                         <p>
                         Color value column name: <input type="text" id="value-name" name="value-name" value="eigenvector"/>
                         <p>
@@ -52,6 +52,13 @@
                             <option value="GREEN_RED_SCHEME">Red-green</option>
                             <option value="YELLOW_RED_SCHEME">Red-yellow</option>
                             <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
+                        </select>
+                        <p>
+                        Graphics Level:
+                        <select id="graphics-level" name="graphics-level">
+                            <option value="low">Low</option>
+                            <option value="medium" selected="selected">Medium</option>
+                            <option value="high">High</option>
                         </select>
                         <p>
                         Zoom:
