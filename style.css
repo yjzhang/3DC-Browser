@@ -2,7 +2,13 @@ body {
 	margin: 0;
 }
 
-
+/*TODO: somehow make canvases side by side */
+canvas {
+    float:left;
+    border-style: solid;
+    border-width: thin;
+    margin:0;
+}
 
 /* floating at the top...*/
 .float-top-group {

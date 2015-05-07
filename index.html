@@ -25,6 +25,10 @@
                 <div class="button-group" >
                     <div id="controls-2" >
                         <p>
+                        View: <select id="view-id" name="view-id">
+                            <option value="0" selected="selected">0</option>
+                        </select>
+                        <p>
                         Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
                         <p>
                         Chromosome number/name: <input type="text" id="chrom" name="chrom" value="chr4"/>
@@ -67,16 +71,18 @@
                         <p>
                         <button name="update" onclick="javascript:updateOptions();">Update</button>
                         <button name="resetCamera" onclick="javascript:resetCamera(document.getElementById('zoom-number').value);">Update Zoom</button>
+                        <button name="addView" onclick="javascript:newView();">Add View</button>
                     </div>
                 </div>
             </div>
         </div>
-
+<!-- commenting out colormap for now
         <div class="right-group">
             <canvas id="colormap-canvas" width=300 height=150></canvas>
         </div>
+-->
         <div class="bottom-group">
-            <button name="Screenshot" onclick="javascript:snapshot();">Snapshot</button>
+            <button name="Screenshot" onclick="javascript:snapshot(0);">Snapshot</button>
         </div>
         <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
         <script src="js/three.min.js"></script> 

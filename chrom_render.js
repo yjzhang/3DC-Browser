@@ -87,6 +87,70 @@ function createNewView(w, h) {
     return view1;
 }
 
+function createViewFromOldView(w, h, oldView) {
+    var newView = new DNAView();
+    newView.scene = new THREE.Scene();
+    // TODO: set new view camera position to old view camera position
+    newView.camera = oldView.camera;
+    newView.renderer = new THREE.WebGLRenderer({
+            preserveDrawingBuffer: false 
+    });
+    newView.renderer.setSize(w, h);
+    newView.renderer.setClearColor("rgb(100,100,100)");
+    document.body.appendChild(newView.renderer.domElement);
+    // TODO: how to link controls for this view to old view?
+    var controls = new THREE.TrackballControls(newView.camera, 
+            newView.renderer.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
+    controls.keys = [ 65, 83, 68 ];
+    controls.addEventListener( 'change', render );
+    newView.controls = controls;
+    newView.trackingLight = new THREE.DirectionalLight( 0xf0f0f0 , 0.9);
+    newView.trackingLight.position.set(newView.camera.position.x, 
+            newView.camera.position.y, newView.camera.position.z);
+    newView.ambientLight = new THREE.AmbientLight( 0x404040 , 0.5);
+    newView.ambientLight.position.set(0, 0, 0);
+    newView.scene.add(newView.trackingLight);
+    newView.scene.add(newView.ambientLight);
+    return newView;
+}
+
+/**
+ * Adds a new view to the thing
+ * */
+function newView() {
+    // TODO:
+    // 1. create new view
+    // 2. update old views with their new widths/heights
+    // 3. set controls of new view to be controls of old view
+    var w = window.innerWidth/(views.length+1) - 10;
+    var h = window.innerHeight;
+    var oldView = views[0];
+    var nv = createViewFromOldView(w, h, oldView);
+    for (var i = 0; i<views.length; i++) {
+        console.log("new view - updating old view");
+        var view = views[i];
+        view.camera.aspect = w / h;
+        view.camera.updateProjectionMatrix();
+        view.renderer.setSize( w, h );
+        view.controls.handleResize();
+    }
+    var viewOption = document.getElementById("view-id");
+    var newOption = document.createElement("option");
+    newOption.value = views.length;
+    newOption.text = String(views.length);
+    viewOption.appendChild(newOption);
+    views.push(nv);
+    render();
+    console.log("newView() done")
+}
+
 /**
  * Creates a DNAStructure object.
  * */
@@ -199,19 +263,9 @@ function reloadObject(view, newStructure, oldStructure, noRemove) {
     }
     addMeshesToScene(newStructure.meshes, view.scene);
     view.structures.push(newStructure);
+    render();
 }
 
-/**
- * simple check to update the color values...
- * */
-function updateColors(newValues, structure) {
-    structure.colorValues = newValues;
-    if (newValues != null && newValues.length == structure.coords.length) {
-        structure.colorValues = newValues;
-    } else if (newValues.length > structure.coords.length) {
-        structure.colorValues = newValues.slice(0, structure.coords.length);
-    }
-}
 // 3. Setting up mouse interactions
 // No need
 
@@ -219,7 +273,6 @@ function updateColors(newValues, structure) {
 //renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
 //renderer.domElement.addEventListener( 'mousedown', onMouseDown, false );
 //renderer.domElement.addEventListener( 'mouseup', onMouseUp, false );
-window.addEventListener('resize', onWindowResizeListenerGenerator(view1), false);
 
 
 // 4. Setting up data tracks / colors
@@ -306,6 +359,7 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
 
 // 5. rendering
 function onWindowResizeListenerGenerator(view) {
+    // TODO: update every view
     return function(evt) {
         view.camera.aspect = window.innerWidth / window.innerHeight;
         view.camera.updateProjectionMatrix();
@@ -314,47 +368,53 @@ function onWindowResizeListenerGenerator(view) {
         render();
     };
 }
+//window.addEventListener('resize', onWindowResizeListenerGenerator(view1), false);
 
 /**
  * Resets the camera to its original position by re-generating all the global
  * variables
  * */
 function resetCamera(zoomSetting, viewId) {
-    var v = views[viewId];
-    var renderer = v.renderer;
-    var camera = new THREE.PerspectiveCamera(60, 
-        window.innerWidth/window.innerHeight, 0.001, 1000);
-    camera.position.z = 5*zoomSetting;
-    //camera.lookAt(THREE.Vector3(0,0,0));
-    camera.updateProjectionMatrix();
-    var controls = new THREE.TrackballControls( camera , renderer.domElement);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
+    for (var i = 0; i<views.length; i++) {
+        var v = views[i];
+        var renderer = v.renderer;
+        var camera = new THREE.PerspectiveCamera(60, 
+            renderer.domElement.width/renderer.domElement.height, 
+            0.001, 1000);
+        camera.position.z = 5*zoomSetting;
+        camera.updateProjectionMatrix();
+        var controls = new THREE.TrackballControls(camera, 
+                v.controls.domElement);
+        controls.rotateSpeed = 1.0;
+        controls.zoomSpeed = 1.2;
+        controls.panSpeed = 0.8;
 
-    controls.noZoom = false;
-    controls.noPan = false;
+        controls.noZoom = false;
+        controls.noPan = false;
 
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
+        controls.staticMoving = true;
+        controls.dynamicDampingFactor = 0.3;
 
-    controls.keys = [ 65, 83, 68 ];
+        controls.keys = [ 65, 83, 68 ];
 
-    controls.addEventListener( 'change', render );
-    v.camera = camera;
-    v.controls = controls;
+        controls.addEventListener( 'change', render );
+        v.camera = camera;
+        v.controls = controls;
+    }
     render();
 }
 
 function animate() {
+    requestAnimationFrame( animate );
     for (var i = 0; i<views.length; i++) {
-        requestAnimationFrame( animate );
         views[i].controls.update();
     }
 }
 
 function render() { 
+    console.log("render");
     for (var i = 0; i<views.length; i++) {
+        // TODO: there is somehow a problem when there is more than one view
         var camera = views[i].camera;
         var light2 = views[i].trackingLight;
         var scene = views[i].scene;
@@ -362,6 +422,7 @@ function render() {
                 camera.position.y, camera.position.z);
         views[i].renderer.render( scene, camera ); 
     }
+    console.log("render done");
 } 
 
 /**
@@ -373,6 +434,7 @@ function snapshot(viewId) {
     window.open(urlData, "_blank");
 
 }
+
 
 
 // Running

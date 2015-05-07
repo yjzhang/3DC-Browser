@@ -1,7 +1,6 @@
-var viewId = 1;
 
 /**
- * General function for updating parameters
+ * General function for updating parameters of a structure
  *
  * */
 function reloadStructureParams(newObjectText, newBedText) {
@@ -17,15 +16,23 @@ function reloadStructureParams(newObjectText, newBedText) {
     var graphicsLevel = document.getElementById("graphics-level").value;
     var selectedColorScheme = document.getElementById("color-scheme").value;
     var colorMap = colorSchemes[selectedColorScheme];
-    var oldStructure = view1.structures[0];
-    var newValues = oldStructure.colorValues;
-    objectText = objectText || oldStructure.objectText;
-    bedText = bedText || oldStructure.bedText;
-    newValues = readBedfile(bedText, res, chrom, 
-            columnName, arm, excludedBins);
-    var newStructure = createDNAStructure(objectText, bedText,
-                newValues, graphicsLevel, tubeRadius, colorMap);
-    reloadObject(view1, newStructure, oldStructure);
+    var viewId = document.getElementById("view-id").value;
+    var view = views[viewId];
+    var oldStructure = view.structures[0];
+    if (!oldStructure) {
+        var newStructure = createDNAStructure(objectText, bedText, [],
+                graphicsLevel, tubeRadius, colorMap);
+        reloadObject(view, newStructure, null);
+    } else {
+        var newValues = oldStructure.colorValues;
+        objectText = objectText || oldStructure.objectText;
+        bedText = bedText || oldStructure.bedText;
+        newValues = readBedfile(bedText, res, chrom, 
+                columnName, arm, excludedBins);
+        var newStructure = createDNAStructure(objectText, bedText,
+                    newValues, graphicsLevel, tubeRadius, colorMap);
+        reloadObject(view, newStructure, oldStructure);
+    }
 
 }
 
