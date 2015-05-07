@@ -41,6 +41,30 @@ function setGeometryColors(geometries, colors, tubeSegments) {
 }
 
 /**
+ * Creates an array of meshes (tubes and balls) from geometries
+ *
+ * */
+function createMeshes(points, geometries, material) {
+    var meshes = [];
+    for (var i = 0; i<geometries[0].length; i++) {
+        var m = new THREE.Mesh(geometries[0][i], material);
+        var m2 = new THREE.Mesh(geometries[1][i], material);
+        m2.position.x = points[i].x;
+        m2.position.y = points[i].y;
+        m2.position.z = points[i].z;
+        meshes.push(m);
+        meshes.push(m2);
+    }
+    return meshes;
+}
+
+function addMeshesToScene(meshes, scene) {
+    for (var i = 0; i<meshes.length; i++) {
+        scene.add(meshes[i]);
+    }
+}
+
+/**
  * Returns an array of meshes
  * */
 function addGeometriesToScene(points, geometries, material, scene) {

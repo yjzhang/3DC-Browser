@@ -155,7 +155,6 @@ THREE.TrackballControls = function ( object, domElement ) {
 			angle;
 
 		return function () {
-
 			moveDirection.set( _moveCurr.x - _movePrev.x, _moveCurr.y - _movePrev.y, 0 );
 			angle = moveDirection.length();
 
