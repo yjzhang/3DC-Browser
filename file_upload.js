@@ -3,7 +3,8 @@
  * General function for updating parameters of a structure
  *
  * */
-function reloadStructureParams(newObjectText, newBedText) {
+function reloadStructureParams(newObjectText, newBedText, objectFileName,
+        bedFileName) {
     var tubeRadius = document.getElementById("radius").value;
     var res = Number(document.getElementById("resolution").value);
     var chrom = document.getElementById("chrom").value;
@@ -22,6 +23,7 @@ function reloadStructureParams(newObjectText, newBedText) {
     if (!oldStructure) {
         var newStructure = createDNAStructure(objectText, bedText, [],
                 graphicsLevel, tubeRadius, colorMap);
+        newStructure.description = objectFileName || "";
         reloadObject(view, newStructure, null);
     } else {
         var newValues = oldStructure.colorValues;
@@ -31,6 +33,8 @@ function reloadStructureParams(newObjectText, newBedText) {
                 columnName, arm, excludedBins);
         var newStructure = createDNAStructure(objectText, bedText,
                     newValues, graphicsLevel, tubeRadius, colorMap);
+        newStructure.description = objectFileName || 
+            oldStructure.description || "";
         reloadObject(view, newStructure, oldStructure);
     }
 
@@ -44,10 +48,11 @@ function handleFileSelect(evt) {
     var files = evt.target.files; // FileList object
     console.log(files);
     var f = target.files[0];
+    var fileName = f.name;
     var r = new FileReader();
     r.onload = function(e) {
         var fileData = e.target.result;
-        reloadStructureParams(fileData, ""); 
+        reloadStructureParams(fileData, "", fileName, ""); 
     };
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.
@@ -59,12 +64,13 @@ function handleBedfileSelect(evt) {
     var files = evt.target.files; // FileList object
     console.log(files);
     var f = target.files[0];
+    var fileName = f.name;
     console.log(f);
     var r = new FileReader();
     r.onload = function(e) {
         // parse removed_bins, resolution
         var fileData = e.target.result;
-        reloadStructureParams("", fileData);
+        reloadStructureParams("", fileData, "", fileName);
     };
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.
@@ -75,7 +81,7 @@ function handleBedfileSelect(evt) {
  * Callback for the "update" button
  * */
 function updateOptions(evt) {
-    reloadStructureParams("", "");
+    reloadStructureParams("", "", "", "");
     //resetCamera(document.getElementById('zoom-number').value);
 }
 

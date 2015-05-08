@@ -1,7 +1,7 @@
 // 0. Objects
 
-var windowWidth = window.innerWidth - 5;
-var windowHeight = window.innerHeight - 2;
+var windowWidth = window.innerWidth;
+var windowHeight = window.innerHeight;
 
 /**
  * DNAStructure objects represent 3D structures for display.
@@ -10,6 +10,8 @@ var windowHeight = window.innerHeight - 2;
 function DNAStructure(objectText, bedText) {
     this.objectText = objectText || "";
     this.bedText = bedText || "";
+    // use filename for the description?
+    this.description = "";
     this.coords = null;
     this.colorMap = null;
     this.colorValues = [];
@@ -25,6 +27,13 @@ function DNAStructure(objectText, bedText) {
     this.graphicsOptions = null;
     // other stuff
     this.chrom = null;
+}
+
+/**
+ * Description of a DNAView - object name, object bedfile, object track,
+ * colormap
+ * */
+function DNAViewDescription() {
 }
 
 /**
@@ -127,11 +136,10 @@ function createViewFromOldView(w, h, oldView) {
  * Adds a new view to the thing
  * */
 function newView() {
-    // TODO:
     // 1. create new view
     // 2. update old views with their new widths/heights
     // 3. set controls of new view to be controls of old view
-    var w = (windowWidth)/(views.length+1) - 7;
+    var w = (windowWidth)/(views.length+1) - 10;
     var h = windowHeight;
     var oldView = views[0];
     var nv = createViewFromOldView(w, h, oldView);
@@ -273,12 +281,7 @@ function reloadObject(view, newStructure, oldStructure, noRemove) {
 
 // 3. Setting up mouse interactions
 // No need
-
 // registering mouse events - unnecessary since this is all done in control
-//renderer.domElement.addEventListener( 'mousemove', onMouseMove, false );
-//renderer.domElement.addEventListener( 'mousedown', onMouseDown, false );
-//renderer.domElement.addEventListener( 'mouseup', onMouseUp, false );
-
 
 // 4. Setting up data tracks / colors
 
@@ -440,7 +443,6 @@ function snapshot(viewId) {
     render();
     var urlData = views[viewId].renderer.domElement.toDataURL();
     window.open(urlData, "_blank");
-
 }
 
 

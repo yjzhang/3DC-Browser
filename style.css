@@ -8,6 +8,7 @@ canvas {
     border-style: solid;
     border-width: thin;
     margin:0;
+    padding:0;
 }
 
 /* floating at the top...*/
