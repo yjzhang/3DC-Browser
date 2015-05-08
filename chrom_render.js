@@ -1,5 +1,7 @@
 // 0. Objects
 
+var windowWidth = window.innerWidth - 5;
+var windowHeight = window.innerHeight - 2;
 
 /**
  * DNAStructure objects represent 3D structures for display.
@@ -129,8 +131,8 @@ function newView() {
     // 1. create new view
     // 2. update old views with their new widths/heights
     // 3. set controls of new view to be controls of old view
-    var w = window.innerWidth/(views.length+1) - 10;
-    var h = window.innerHeight;
+    var w = (windowWidth)/(views.length+1) - 7;
+    var h = windowHeight;
     var oldView = views[0];
     var nv = createViewFromOldView(w, h, oldView);
     for (var i = 0; i<views.length; i++) {
@@ -173,7 +175,10 @@ function createDNAStructure(objectText, bedText, colorValues,
             g.tubeSegments, g.sphereWidthSegments, g.sphereHeightSegments);
     // colors... this is terrible because we can't just take in a bedfile...
     var colors = [];
-    if (colorValues != null && colorValues.length == all_coords.length) {
+    if (colorValues != null && colorValues.length >= all_coords.length) {
+        if (colorValues.length > all_coords.length) {
+            console.log("WARNING: there are extra color values");
+        }
         colors = coordsToColors(all_coords.length, colorMap, colorValues);
     } else {
         colors = coordsToColors(all_coords.length, colorMap, null);
@@ -190,8 +195,8 @@ function createDNAStructure(objectText, bedText, colorValues,
 
 // 1. setting up the basic scene
 var views = [];
-var h = window.innerHeight;
-var w = window.innerWidth;
+var h = windowHeight;
+var w = windowWidth - 5;
 var view1 = createNewView(w, h);
 views.push(view1);
 
@@ -358,17 +363,22 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
 
 
 // 5. rendering
-function onWindowResizeListenerGenerator(view) {
-    // TODO: update every view
-    return function(evt) {
-        view.camera.aspect = window.innerWidth / window.innerHeight;
+
+function onWindowResizeListener(evt) {
+    windowHeight = window.innerHeight;
+    windowWidth = window.innerWidth;
+    var w = windowWidth/(views.length) - 10;
+    var h = windowHeight;
+    for (var i = 0; i<views.length; i++) {
+        var view = views[i];
+        view.camera.aspect = w / h;
         view.camera.updateProjectionMatrix();
-        view.renderer.setSize( window.innerWidth, window.innerHeight );
+        view.renderer.setSize( w, h );
         view.controls.handleResize();
-        render();
-    };
+    }
+    render();
 }
-//window.addEventListener('resize', onWindowResizeListenerGenerator(view1), false);
+window.addEventListener('resize', onWindowResizeListener, false);
 
 /**
  * Resets the camera to its original position by re-generating all the global
@@ -412,7 +422,6 @@ function animate() {
 }
 
 function render() { 
-    console.log("render");
     for (var i = 0; i<views.length; i++) {
         // TODO: there is somehow a problem when there is more than one view
         var camera = views[i].camera;
@@ -422,7 +431,6 @@ function render() {
                 camera.position.y, camera.position.z);
         views[i].renderer.render( scene, camera ); 
     }
-    console.log("render done");
 } 
 
 /**
