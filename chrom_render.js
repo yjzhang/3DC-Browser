@@ -141,7 +141,7 @@ function newView() {
     // 1. create new view
     // 2. update old views with their new widths/heights
     // 3. set controls of new view to be controls of old view
-    var w = (windowWidth)/(views.length+1) - 10;
+    var w = (windowWidth)/(views.length+1) - 20;
     var h = windowHeight;
     var oldView = views[0];
     var nv = createViewFromOldView(w, h, oldView);
@@ -174,7 +174,7 @@ function newView() {
             c.style.display="none";
     };
     dbGroup.appendChild(descriptionButton);
-    dbGroup.
+    //dbGroup.
     
     views.push(nv);
     render();
@@ -195,7 +195,9 @@ function createDescriptionFromView(view, viewId) {
         descriptionBox.setAttribute("id", "desc-" + String(viewId));
     } else {
         // TODO: remove all children?
-
+        while (descriptionBox.firstChild) {
+            descriptionBox.removeChild(descriptionBox.firstChild);
+        }
     }
     // 1. add the name of the structure
     // 2. create a color map
@@ -270,7 +272,7 @@ structures.push(structure1);
 
 // graphics options
 var graphicsOptions = {
-    low: {tubeSegments: 8, sphereWidthSegments: 4, sphereHeightSegments: 4},
+    low: {tubeSegments: 3, sphereWidthSegments: 3, sphereHeightSegments: 2},
     medium: {tubeSegments: 32, sphereWidthSegments: 8, sphereHeightSegments: 6},
     high: {tubeSegments: 64, sphereWidthSegments: 16, sphereHeightSegments: 12}};
 
