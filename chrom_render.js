@@ -50,6 +50,8 @@ function DNAView() {
     this.controls = null;
     // whether or not to allow multiple structures in one view
     this.multipleStructures = false;
+    // DOM element representing the description box
+    this.descriptionBox = null;
 }
 
 /**
@@ -151,14 +153,65 @@ function newView() {
         view.renderer.setSize( w, h );
         view.controls.handleResize();
     }
+    // create new options in the control panel
     var viewOption = document.getElementById("view-id");
     var newOption = document.createElement("option");
     newOption.value = views.length;
     newOption.text = String(views.length);
     viewOption.appendChild(newOption);
+    // create description box group
+    var dbGroup = document.createElement("div");
+    dbGroup.setAttribute("class", "float-top-group"); 
+    // create new "help" button
+    var descriptionButton = document.createElement("button");
+    descriptionButton.appendChild(document.createTextNode("Description"));
+    var lastView = views.length;
+    descriptionButton.onclick = function() {
+        var c = document.getElementById("desc-"+String(lastView));
+        if (c.style.display=="none")
+            c.style.display="block";
+        else 
+            c.style.display="none";
+    };
+    dbGroup.appendChild(descriptionButton);
+    dbGroup.
+    
     views.push(nv);
     render();
     console.log("newView() done")
+}
+
+/**
+ * Given a DNAView object, appends to the DOM a hidden description element
+ * and a control button, and adds it to the DOM, or updates the description
+ * element if it already exists.
+ * */
+function createDescriptionFromView(view, viewId) {
+    //TODO
+    var descriptionBox = view.descriptionBox;
+    if (descriptionBox == null) {
+        descriptionBox = document.createElement("div");
+        descriptionBox.setAttribute("class", "button-group");
+        descriptionBox.setAttribute("id", "desc-" + String(viewId));
+    } else {
+        // TODO: remove all children?
+
+    }
+    // 1. add the name of the structure
+    // 2. create a color map
+    var cmCanvas = document.createElement("canvas");
+    var cv = view.structures[0].colorValues;
+    var cm = view.structures[0].colorMap;
+    if (cv) {
+        var cmin = min(cv);
+        var cmax = max(cv);
+        drawColorScheme(cmCanvas, cm, cmin, cmax);
+    } else {
+        drawColorScheme(cmCanvas, cm, 0, 1);
+    }
+    descriptionBox.appendChild(cmCanvas);
+    // 3. ???
+    return descriptionBox;
 }
 
 /**
@@ -303,7 +356,7 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
     }
     var values = [];
     var bedfile_split = bedfile.trim().split("\n");
-    var line1 = bedfile_split[0].split(/\s+/);
+    var line1 = bedfile_split[0].trim().split(/\s+/);
     // ldict maps column headers to column indices
     // it should contain "chr", "start", "end", and something else
     var ldict = {};
@@ -325,9 +378,9 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
         console.log("Bedfile contains no arm information, ignoring");
         selectedArm = 0;
     }
-    ldict[value_name] = ldict[value_name] || (line_values.length - 1);
+    ldict[value_name] = ldict[value_name] || (line1.length - 1);
     for (var i = 0; i<bedfile_split.length; i++) {
-        var line_values = bedfile_split[i].split(/\s+/);
+        var line_values = bedfile_split[i].trim().split(/\s+/);
         //console.log(line_values);
         var chr = line_values[ldict.chr];
         // TODO: something like bedtools intersect
@@ -426,7 +479,6 @@ function animate() {
 
 function render() { 
     for (var i = 0; i<views.length; i++) {
-        // TODO: there is somehow a problem when there is more than one view
         var camera = views[i].camera;
         var light2 = views[i].trackingLight;
         var scene = views[i].scene;
