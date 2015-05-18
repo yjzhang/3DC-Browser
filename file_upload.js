@@ -4,7 +4,7 @@
  *
  * */
 function reloadStructureParams(newObjectText, newBedText, objectFileName,
-        bedFileName) {
+        bedFileName, updateColors) {
     var tubeRadius = document.getElementById("radius").value;
     var res = Number(document.getElementById("resolution").value);
     var chrom = document.getElementById("chrom").value;
@@ -70,7 +70,11 @@ function handleBedfileSelect(evt) {
     r.onload = function(e) {
         // parse removed_bins, resolution
         var fileData = e.target.result;
-        reloadStructureParams("", fileData, "", fileName);
+        var viewId = document.getElementById("view-id").value;
+        var view = views[viewId];
+        var oldStructure = view.structures[0];
+        oldStructure.bedText = fileData;
+        oldStructure.colorDesc = fileName;
     };
     r.readAsText(f);
     //files is a FileList of File objects. List some properties.

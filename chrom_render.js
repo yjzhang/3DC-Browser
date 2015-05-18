@@ -12,6 +12,7 @@ function DNAStructure(objectText, bedText) {
     this.bedText = bedText || "";
     // use filename for the description?
     this.description = "";
+    this.colorDesc = "";
     this.coords = null;
     this.colorMap = null;
     this.colorValues = [];
