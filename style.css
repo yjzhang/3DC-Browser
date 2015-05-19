@@ -11,6 +11,12 @@ canvas {
     padding:0;
 }
 
+.colormap {
+    float: none;
+    margin: 0.1em;
+    padding: 0.1em;
+}
+
 /* floating at the top...*/
 .float-top-group {
 	position: absolute;
@@ -30,6 +36,7 @@ canvas {
 }
 
 .right-group {
+    float: right;
     position: absolute;
     right: 0;
     background-color: #dcdcdc;

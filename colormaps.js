@@ -57,8 +57,11 @@ function makeMultiColor(value, min, max, colorScheme) {
         colorStops = 
             colorStops.concat(min + i*(max - min)/(colors.length-1));
     }
+    if (value <= colorStops[0]) {
+        return "rgb("+colors[0].r+","+colors[0].g+","+colors[0].b+")";
+    }
     for (var i = 1; i<colorScheme.colors.length; i++) {
-        if (value <= colorStops[i]+0.01 &&  value >= colorStops[i-1]) {
+        if (value <= colorStops[i]+0.0001 &&  value >= colorStops[i-1]) {
             var cMin = colorStops[i-1];
             var cMax = colorStops[i];
             var r = interpolate(value, cMin, cMax, colors[i-1].r, colors[i].r);
@@ -67,7 +70,8 @@ function makeMultiColor(value, min, max, colorScheme) {
             return "rgb("+parseInt(r)+","+parseInt(g)+","+parseInt(b)+")";
         }
     }
-    return "rgb(255,255,255)";
+    var lc = colors[colors.length-1];
+    return "rgb("+lc.r+","+lc.g+","+lc.b+")";
 }
 
 function HeatMap(name, values){

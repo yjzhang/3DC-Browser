@@ -17,13 +17,16 @@ function reloadStructureParams(newObjectText, newBedText, objectFileName,
     var graphicsLevel = document.getElementById("graphics-level").value;
     var selectedColorScheme = document.getElementById("color-scheme").value;
     var colorMap = colorSchemes[selectedColorScheme];
+    var minColor = Number(document.getElementById("min-color").value);
+    var maxColor = Number(document.getElementById("max-color").value);
     var viewId = document.getElementById("view-id").value;
     var view = views[viewId];
     var oldStructure = view.structures[0];
     if (!oldStructure) {
         var newStructure = createDNAStructure(objectText, bedText, [],
-                graphicsLevel, tubeRadius, colorMap);
+                graphicsLevel, tubeRadius, colorMap, minColor, maxColor);
         newStructure.description = objectFileName || "";
+        newStructure.colorDesc = "";
         reloadObject(view, newStructure, null);
     } else {
         var newValues = oldStructure.colorValues;
@@ -32,9 +35,11 @@ function reloadStructureParams(newObjectText, newBedText, objectFileName,
         newValues = readBedfile(bedText, res, chrom, 
                 columnName, arm, excludedBins);
         var newStructure = createDNAStructure(objectText, bedText,
-                    newValues, graphicsLevel, tubeRadius, colorMap);
+                    newValues, graphicsLevel, tubeRadius, colorMap,
+                    minColor, maxColor);
         newStructure.description = objectFileName || 
             oldStructure.description || "";
+        newStructure.colorDesc = oldStructure.colorDesc;
         reloadObject(view, newStructure, oldStructure);
     }
 
@@ -95,3 +100,9 @@ document.getElementById('files').addEventListener('change',
 document.getElementById('bedfiles').addEventListener('change', 
         handleBedfileSelect, false);
 
+/**
+ * Updates the fields in the control panel to be the views of the view thing
+ * */
+function updateViewDisplaySettings(viewId) {
+
+}

@@ -28,6 +28,9 @@ function DNAStructure(objectText, bedText) {
     this.graphicsOptions = null;
     // other stuff
     this.chrom = null;
+    // values for the min/max colors
+    this.minColorValue = 0;
+    this.maxColorValue = 0;
 }
 
 /**
@@ -53,6 +56,11 @@ function DNAView() {
     this.multipleStructures = false;
     // DOM element representing the description box
     this.descriptionBox = null;
+    this.graphicsLevel = "medium";
+    this.excludedBins = [];
+    this.tubeRadius = 0.01;
+    this.chrom = null;
+    this.colorScheme = null;
 }
 
 /**
@@ -153,30 +161,15 @@ function newView() {
         view.camera.updateProjectionMatrix();
         view.renderer.setSize( w, h );
         view.controls.handleResize();
+        if (view.structures[0])
+            view.descriptionBox = createDescriptionFromView(view, i);
     }
     // create new options in the control panel
     var viewOption = document.getElementById("view-id");
     var newOption = document.createElement("option");
     newOption.value = views.length;
     newOption.text = String(views.length);
-    viewOption.appendChild(newOption);
-    // create description box group
-    var dbGroup = document.createElement("div");
-    dbGroup.setAttribute("class", "float-top-group"); 
-    // create new "help" button
-    var descriptionButton = document.createElement("button");
-    descriptionButton.appendChild(document.createTextNode("Description"));
-    var lastView = views.length;
-    descriptionButton.onclick = function() {
-        var c = document.getElementById("desc-"+String(lastView));
-        if (c.style.display=="none")
-            c.style.display="block";
-        else 
-            c.style.display="none";
-    };
-    dbGroup.appendChild(descriptionButton);
-    //dbGroup.
-    
+    viewOption.appendChild(newOption);  
     views.push(nv);
     render();
     console.log("newView() done")
@@ -194,6 +187,8 @@ function createDescriptionFromView(view, viewId) {
         descriptionBox = document.createElement("div");
         descriptionBox.setAttribute("class", "button-group");
         descriptionBox.setAttribute("id", "desc-" + String(viewId));
+        descriptionBox.style.display = "none";
+        descriptionBox.style.float = "right";
     } else {
         // TODO: remove all children?
         while (descriptionBox.firstChild) {
@@ -201,19 +196,59 @@ function createDescriptionFromView(view, viewId) {
         }
     }
     // 1. add the name of the structure
+    // TODO: add the name of the structure
+    if (view.structures[0]) {
+        descriptionBox.appendChild(document.createTextNode("File name: " + view.structures[0].description));
+        descriptionBox.appendChild(document.createElement("p"));
+        descriptionBox.appendChild(document.createTextNode("Track name: " + view.structures[0].colorDesc));
+        descriptionBox.appendChild(document.createElement("p"));
+    }
     // 2. create a color map
     var cmCanvas = document.createElement("canvas");
+    cmCanvas.setAttribute("class", "colormap");
+    cmCanvas.width = 300;
+    cmCanvas.height = 150;
     var cv = view.structures[0].colorValues;
     var cm = view.structures[0].colorMap;
-    if (cv) {
-        var cmin = min(cv);
-        var cmax = max(cv);
-        drawColorScheme(cmCanvas, cm, cmin, cmax);
+    if (cv && cv.length > 0) {
+        var cmin = view.structures[0].minColorValue;
+        var cmax = view.structures[0].maxColorValue;
+        if (cmin == null || cmax == null || cmin == cmax) {
+            cmin = min(cv);
+            cmax = max(cv);
+        }
+        drawColorMap(cmCanvas, cm, cmax, cmin);
     } else {
-        drawColorScheme(cmCanvas, cm, 0, 1);
+        drawColorMap(cmCanvas, cm, 1, 0);
     }
     descriptionBox.appendChild(cmCanvas);
-    // 3. ???
+
+    // create description box group
+    var dbGroup = document.getElementById("db-group-" + String(viewId));
+    if (!dbGroup) {
+        dbGroup = document.createElement("div");
+        dbGroup.setAttribute("id",  "db-group-" + String(viewId));
+        dbGroup.setAttribute("class", "float-top-group"); 
+        //dbGroup.style.right = 0;
+        dbGroup.style.width=100;
+        // create new "help" button
+        var descriptionButton = document.createElement("button");
+        descriptionButton.style.float = "right";
+        descriptionButton.appendChild(document.createTextNode("Description"));
+        descriptionButton.onclick = function() {
+            var c = document.getElementById("desc-"+String(viewId));
+            if (c.style.display=="none")
+                c.style.display="block";
+            else 
+                c.style.display="none";
+        };
+        dbGroup.appendChild(descriptionButton);
+        view.descriptionBox = descriptionBox;
+        dbGroup.appendChild(descriptionBox);
+        document.body.appendChild(dbGroup);
+    }
+    var rendererElement = view.renderer.domElement;
+    dbGroup.style.left = rendererElement.offsetLeft + rendererElement.width - 120;
     return descriptionBox;
 }
 
@@ -221,7 +256,7 @@ function createDescriptionFromView(view, viewId) {
  * Creates a DNAStructure object.
  * */
 function createDNAStructure(objectText, bedText, colorValues, 
-        graphicsLevel, tubeRadius, colorMap) {
+        graphicsLevel, tubeRadius, colorMap, cmin, cmax) {
     var structure = new DNAStructure(objectText, bedText);
     tubeRadius = tubeRadius || 0.01;
     graphicsLevel = graphicsLevel || "medium";
@@ -231,6 +266,8 @@ function createDNAStructure(objectText, bedText, colorValues,
     structure.tubeRadius = tubeRadius;
     structure.colorMap = colorMap;
     structure.colorValues = colorValues;
+    structure.minColorValue = cmin;
+    structure.maxColorValue = cmax;
     var all_coords = pointsToCurve(objectText);
     structure.coords = all_coords;
     var g = graphicsOptions[graphicsLevel];
@@ -243,7 +280,8 @@ function createDNAStructure(objectText, bedText, colorValues,
         if (colorValues.length > all_coords.length) {
             console.log("WARNING: there are extra color values");
         }
-        colors = coordsToColors(all_coords.length, colorMap, colorValues);
+        colors = coordsToColors(all_coords.length, colorMap, colorValues,
+                cmin, cmax);
     } else {
         colors = coordsToColors(all_coords.length, colorMap, null);
     }
@@ -274,7 +312,7 @@ structures.push(structure1);
 // graphics options
 var graphicsOptions = {
     low: {tubeSegments: 3, sphereWidthSegments: 3, sphereHeightSegments: 2},
-    medium: {tubeSegments: 32, sphereWidthSegments: 8, sphereHeightSegments: 6},
+    medium: {tubeSegments: 16, sphereWidthSegments: 8, sphereHeightSegments: 6},
     high: {tubeSegments: 64, sphereWidthSegments: 16, sphereHeightSegments: 12}};
 
 /**
@@ -302,7 +340,7 @@ function pointsToCurve(coords) {
  * THREE.Color objects for each point. Right now this just does linear
  * interpolation.
  * */
-function coordsToColors(num_points, colorScheme, values) {
+function coordsToColors(num_points, colorScheme, values, cmin, cmax) {
     var l = num_points;
     var colors = [];
     if (values == null) {
@@ -312,8 +350,10 @@ function coordsToColors(num_points, colorScheme, values) {
         }
     } else {
         // need to get min, max
-        var cmin = min(values);
-        var cmax = max(values);
+        if (cmin == null || cmax == null || cmin == cmax) {
+            cmin = min(values);
+            cmax = max(values);
+        }
         for (var i = 0; i<num_points; i++) {
             colors.push(new THREE.Color(makeColor(values[i], cmin, cmax, colorScheme)));
         }
@@ -332,6 +372,7 @@ function reloadObject(view, newStructure, oldStructure, noRemove) {
     }
     addMeshesToScene(newStructure.meshes, view.scene);
     view.structures.push(newStructure);
+    view.descriptionBox = createDescriptionFromView(view, views.indexOf(view));
     render();
 }
 
@@ -444,14 +485,34 @@ window.addEventListener('resize', onWindowResizeListener, false);
  * variables
  * */
 function resetCamera(zoomSetting, viewId) {
+    var v = views[0];
+    var renderer = v.renderer;
+    var camera = new THREE.PerspectiveCamera(60, 
+        renderer.domElement.width/renderer.domElement.height, 
+        0.001, 1000);
+    camera.position.z = 5*zoomSetting;
+    camera.updateProjectionMatrix();
+    var controls = new THREE.TrackballControls(camera, 
+            v.controls.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+
+    controls.noZoom = false;
+    controls.noPan = false;
+
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
+
+    controls.keys = [ 65, 83, 68 ];
+
+    controls.addEventListener( 'change', render );
+    v.camera = camera;
+    v.controls = controls;
     for (var i = 0; i<views.length; i++) {
         var v = views[i];
-        var renderer = v.renderer;
-        var camera = new THREE.PerspectiveCamera(60, 
-            renderer.domElement.width/renderer.domElement.height, 
-            0.001, 1000);
-        camera.position.z = 5*zoomSetting;
-        camera.updateProjectionMatrix();
+        renderer = v.renderer;
+        v.camera = camera;
         var controls = new THREE.TrackballControls(camera, 
                 v.controls.domElement);
         controls.rotateSpeed = 1.0;
