@@ -95,6 +95,14 @@ function makeColor(value, min, max, colorScheme) {
         return makeMultiColor(value, min, max, colorScheme);
     }
     else {
+        if (value <= min) {
+            return "rgb("+colorScheme.minr+
+                ","+colorScheme.ming+","+colorScheme.minb+")";
+        }
+        else if (value >= max) {
+            return "rgb("+colorScheme.maxr+
+                ","+colorScheme.maxg+","+colorScheme.maxb+")";
+        }
         var colorR = interpolate(value, min, max,
         colorScheme.minr, colorScheme.maxr);
         var colorG = interpolate(value, min, max,
@@ -103,7 +111,7 @@ function makeColor(value, min, max, colorScheme) {
         colorScheme.minb, colorScheme.maxb);
         //Colors have to be ints
         return "rgb("+parseInt(colorR)+","+parseInt(colorG)+","+
-        parseInt(colorB)+")";
+            parseInt(colorB)+")";
     }
 }
 

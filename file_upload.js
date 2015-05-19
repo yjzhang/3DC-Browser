@@ -1,3 +1,4 @@
+var oldViewId = 0;
 
 /**
  * General function for updating parameters of a structure
@@ -101,8 +102,18 @@ document.getElementById('bedfiles').addEventListener('change',
         handleBedfileSelect, false);
 
 /**
- * Updates the fields in the control panel to be the views of the view thing
+ * Updates the fields in the control panel to the correct view
  * */
-function updateViewDisplaySettings(viewId) {
+function updateViewDisplaySettings(newViewId) {
+    var nv = views[newViewId];
+    var ov = views[oldViewId];
+    if (!ov.controlPanelValues) {
+        ov.controlPanelValues = new ControlPanelValues();
+    }
+    var cpv = ov.controlPanelValues;
+    cpv.structure = document.getElementById("files").value;
+    cpv.graphicsLevel = document.getElementById("graphics-level").value;
 
+    if (!nv.controlPanelValues) {
+    }
 }

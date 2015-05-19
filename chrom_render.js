@@ -34,13 +34,6 @@ function DNAStructure(objectText, bedText) {
 }
 
 /**
- * Description of a DNAView - object name, object bedfile, object track,
- * colormap
- * */
-function DNAViewDescription() {
-}
-
-/**
  * DNAView objects represent views for displaying 3d structures.
  *
  * */
@@ -56,11 +49,44 @@ function DNAView() {
     this.multipleStructures = false;
     // DOM element representing the description box
     this.descriptionBox = null;
+    this.controlPanelValues = null;
+}
+
+/**
+ * Object that represents stuff on the control panel.
+ * */
+function controlPanelValues() {
+    this.structure = "";
     this.graphicsLevel = "medium";
-    this.excludedBins = [];
+    this.zoom = 1.0;
+    this.bedfile = "";
+    this.resolution = 200000;
+    this.chrom = "chr4";
+    this.arm = 0;
+    this.minValue = 0;
+    this.maxValue = 0;
+    this.excludedBins = "";
     this.tubeRadius = 0.01;
-    this.chrom = null;
-    this.colorScheme = null;
+    this.column = "eigenvector";
+    this.colorScheme = "BLUE_WHITE_RED_SCHEME";
+}
+
+/**
+ * Creates a new set of controls for the view.
+ * */
+function newControls(view1) {
+    var controls = new THREE.TrackballControls(view1.camera, 
+            view1.renderer.domElement);
+    controls.rotateSpeed = 1.0;
+    controls.zoomSpeed = 1.2;
+    controls.panSpeed = 0.8;
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
+    controls.dynamicDampingFactor = 0.3;
+    controls.keys = [ 65, 83, 68 ];
+    controls.addEventListener( 'change', render );
+    return controls;
 }
 
 /**
@@ -86,18 +112,7 @@ function createNewView(w, h) {
     // controls don't work.
     document.body.appendChild(view1.renderer.domElement);
 
-    var controls = new THREE.TrackballControls(view1.camera, 
-            view1.renderer.domElement);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
-    controls.keys = [ 65, 83, 68 ];
-    controls.addEventListener( 'change', render );
-    view1.controls = controls;
+    view1.controls = newControls(view1);
 
     view1.trackingLight = new THREE.DirectionalLight( 0xf0f0f0 , 0.9);
     view1.trackingLight.position.set(view1.camera.position.x, 
@@ -112,7 +127,6 @@ function createNewView(w, h) {
 function createViewFromOldView(w, h, oldView) {
     var newView = new DNAView();
     newView.scene = new THREE.Scene();
-    // TODO: set new view camera position to old view camera position
     newView.camera = oldView.camera;
     newView.renderer = new THREE.WebGLRenderer({
             preserveDrawingBuffer: false 
@@ -120,19 +134,8 @@ function createViewFromOldView(w, h, oldView) {
     newView.renderer.setSize(w, h);
     newView.renderer.setClearColor("rgb(100,100,100)");
     document.body.appendChild(newView.renderer.domElement);
-    // TODO: how to link controls for this view to old view?
-    var controls = new THREE.TrackballControls(newView.camera, 
-            newView.renderer.domElement);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-    controls.noZoom = false;
-    controls.noPan = false;
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
-    controls.keys = [ 65, 83, 68 ];
-    controls.addEventListener( 'change', render );
-    newView.controls = controls;
+
+    newView.controls = newControls(newView);
     newView.trackingLight = new THREE.DirectionalLight( 0xf0f0f0 , 0.9);
     newView.trackingLight.position.set(newView.camera.position.x, 
             newView.camera.position.y, newView.camera.position.z);
@@ -150,7 +153,7 @@ function newView() {
     // 1. create new view
     // 2. update old views with their new widths/heights
     // 3. set controls of new view to be controls of old view
-    var w = (windowWidth)/(views.length+1) - 20;
+    var w = (windowWidth)/(views.length+1) - 15;
     var h = windowHeight;
     var oldView = views[0];
     var nv = createViewFromOldView(w, h, oldView);
@@ -161,8 +164,9 @@ function newView() {
         view.camera.updateProjectionMatrix();
         view.renderer.setSize( w, h );
         view.controls.handleResize();
-        if (view.structures[0])
+        if (view.structures[0]) {
             view.descriptionBox = createDescriptionFromView(view, i);
+        }
     }
     // create new options in the control panel
     var viewOption = document.getElementById("view-id");
@@ -195,34 +199,32 @@ function createDescriptionFromView(view, viewId) {
             descriptionBox.removeChild(descriptionBox.firstChild);
         }
     }
-    // 1. add the name of the structure
-    // TODO: add the name of the structure
     if (view.structures[0]) {
+        // 1. add the name of the structure
         descriptionBox.appendChild(document.createTextNode("File name: " + view.structures[0].description));
         descriptionBox.appendChild(document.createElement("p"));
         descriptionBox.appendChild(document.createTextNode("Track name: " + view.structures[0].colorDesc));
         descriptionBox.appendChild(document.createElement("p"));
-    }
-    // 2. create a color map
-    var cmCanvas = document.createElement("canvas");
-    cmCanvas.setAttribute("class", "colormap");
-    cmCanvas.width = 300;
-    cmCanvas.height = 150;
-    var cv = view.structures[0].colorValues;
-    var cm = view.structures[0].colorMap;
-    if (cv && cv.length > 0) {
-        var cmin = view.structures[0].minColorValue;
-        var cmax = view.structures[0].maxColorValue;
-        if (cmin == null || cmax == null || cmin == cmax) {
-            cmin = min(cv);
-            cmax = max(cv);
+        // 2. create a color map
+        var cmCanvas = document.createElement("canvas");
+        cmCanvas.setAttribute("class", "colormap");
+        cmCanvas.width = 300;
+        cmCanvas.height = 150;
+        var cv = view.structures[0].colorValues;
+        var cm = view.structures[0].colorMap;
+        if (cv && cv.length > 0) {
+            var cmin = view.structures[0].minColorValue;
+            var cmax = view.structures[0].maxColorValue;
+            if (cmin === null || cmax === null || cmin === cmax) {
+                cmin = min(cv);
+                cmax = max(cv);
+            }
+            drawColorMap(cmCanvas, cm, cmax, cmin);
+        } else {
+            drawColorMap(cmCanvas, cm, 1, 0);
         }
-        drawColorMap(cmCanvas, cm, cmax, cmin);
-    } else {
-        drawColorMap(cmCanvas, cm, 1, 0);
+        descriptionBox.appendChild(cmCanvas);
     }
-    descriptionBox.appendChild(cmCanvas);
-
     // create description box group
     var dbGroup = document.getElementById("db-group-" + String(viewId));
     if (!dbGroup) {
@@ -237,7 +239,7 @@ function createDescriptionFromView(view, viewId) {
         descriptionButton.appendChild(document.createTextNode("Description"));
         descriptionButton.onclick = function() {
             var c = document.getElementById("desc-"+String(viewId));
-            if (c.style.display=="none")
+            if (c.style.display==="none")
                 c.style.display="block";
             else 
                 c.style.display="none";
@@ -325,9 +327,9 @@ function pointsToCurve(coords) {
     for (var i in coords_str) {
         var c = coords_str[i];
         var c_nums = c.trim().split(" ");
-        if (c_nums.length == 1)
+        if (c_nums.length === 1)
             continue;
-        else if (c_nums.length == 3) {
+        else if (c_nums.length === 3) {
             all_coords[i-1] = new THREE.Vector3(Number(c_nums[0]), 
                     Number(c_nums[1]), Number(c_nums[2]));
         }
@@ -343,18 +345,18 @@ function pointsToCurve(coords) {
 function coordsToColors(num_points, colorScheme, values, cmin, cmax) {
     var l = num_points;
     var colors = [];
-    if (values == null) {
+    if (values === null) {
         // do linear interpolation
         for (var i = 0; i<num_points; i++) {
             colors.push(new THREE.Color(makeColor(i, 0, l-1, colorScheme)));
         }
     } else {
         // need to get min, max
-        if (cmin == null || cmax == null || cmin == cmax) {
+        if (cmin === null || cmax === null || cmin === cmax) {
             cmin = min(values);
             cmax = max(values);
         }
-        for (var i = 0; i<num_points; i++) {
+        for (i = 0; i<num_points; i++) {
             colors.push(new THREE.Color(makeColor(values[i], cmin, cmax, colorScheme)));
         }
     }
@@ -395,7 +397,7 @@ function reloadObject(view, newStructure, oldStructure, noRemove) {
  * */
 function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) {
     console.log("readBedfile");
-    if (bedfile.length == 0) {
+    if (bedfile.length === 0) {
         return [];
     }
     var values = [];
@@ -418,7 +420,7 @@ function readBedfile(bedfile, resolution, chrom, value_name, arm, removed_bins) 
     ldict.chr = ldict.chr || 0;
     ldict.start = ldict.start || 1;
     ldict.end = ldict.end || 2;
-    if (selectedArm != 0 && ldict.arm == undefined) {
+    if (selectedArm !== 0 && ldict.arm == undefined) {
         console.log("Bedfile contains no arm information, ignoring");
         selectedArm = 0;
     }
@@ -481,10 +483,10 @@ function onWindowResizeListener(evt) {
 window.addEventListener('resize', onWindowResizeListener, false);
 
 /**
- * Resets the camera to its original position by re-generating all the global
- * variables
+ * Resets the camera to its original position, and links all the cameras.
+ *
  * */
-function resetCamera(zoomSetting, viewId) {
+function resetCamera(zoomSetting) {
     var v = views[0];
     var renderer = v.renderer;
     var camera = new THREE.PerspectiveCamera(60, 
@@ -492,29 +494,30 @@ function resetCamera(zoomSetting, viewId) {
         0.001, 1000);
     camera.position.z = 5*zoomSetting;
     camera.updateProjectionMatrix();
-    var controls = new THREE.TrackballControls(camera, 
-            v.controls.domElement);
-    controls.rotateSpeed = 1.0;
-    controls.zoomSpeed = 1.2;
-    controls.panSpeed = 0.8;
-
-    controls.noZoom = false;
-    controls.noPan = false;
-
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
-
-    controls.keys = [ 65, 83, 68 ];
-
-    controls.addEventListener( 'change', render );
     v.camera = camera;
-    v.controls = controls;
+    v.controls = newControls(v);
+    for (var i = 0; i<views.length; i++) {
+        v = views[i];
+        v.camera = camera;
+        v.controls = newControls(v);
+    }
+    render();
+}
+
+/**
+ * Unlinks cameras and resets the zoom.
+ * */
+function unlinkCameras(zoomSetting) {
     for (var i = 0; i<views.length; i++) {
         var v = views[i];
-        renderer = v.renderer;
-        v.camera = camera;
+        var renderer = v.renderer;
+        var camera = new THREE.PerspectiveCamera(60, 
+                renderer.domElement.style.width/renderer.domElement.style.height, 
+                0.001, 1000);
+        camera.position.z = 5*zoomSetting;
+        camera.updateProjectionMatrix();
         var controls = new THREE.TrackballControls(camera, 
-                v.controls.domElement);
+        v.controls.domElement);
         controls.rotateSpeed = 1.0;
         controls.zoomSpeed = 1.2;
         controls.panSpeed = 0.8;
