@@ -164,8 +164,8 @@ function drawColorMap(canvas, colorScheme, maxValue, minValue) {
     //writing text
     context.fillStyle = "rgb(0,0,0)";
     context.font = "12pt sans-serif";
-    var maxString = String(maxValue);
-    var minString = String(minValue);
+    var maxString = String(maxValue.toFixed(5));
+    var minString = String(minValue.toFixed(5));
     context.fillText(minString, 0, height/2+20);
     context.fillText(maxString, width-9*maxString.length, height/2+20);
 }
