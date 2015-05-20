@@ -55,19 +55,19 @@ function DNAView() {
 /**
  * Object that represents stuff on the control panel.
  * */
-function controlPanelValues() {
+function ControlPanelValues() {
     this.structure = "";
     this.graphicsLevel = "medium";
     this.zoom = 1.0;
     this.bedfile = "";
     this.resolution = 200000;
-    this.chrom = "chr4";
+    this.chrom = "";
     this.arm = 0;
-    this.minValue = 0;
-    this.maxValue = 0;
+    this.minValue = null;
+    this.maxValue = null;
     this.excludedBins = "";
-    this.tubeRadius = 0.01;
-    this.column = "eigenvector";
+    this.radius = 0.01;
+    this.column = "";
     this.colorScheme = "BLUE_WHITE_RED_SCHEME";
 }
 
@@ -280,10 +280,13 @@ function createDNAStructure(objectText, bedText, colorValues,
     var colors = [];
     if (colorValues != null && colorValues.length >= all_coords.length) {
         if (colorValues.length > all_coords.length) {
-            console.log("WARNING: there are extra color values");
+            console.log("Warning there are extra color values");
         }
         colors = coordsToColors(all_coords.length, colorMap, colorValues,
                 cmin, cmax);
+    } else if(colorValues != null && colorValues.length > 0 && colorValues.length < all_coords.length) {
+        alert("Warning: There are too few color values");
+        colors = coordsToColors(all_coords.length, colorMap, null);
     } else {
         colors = coordsToColors(all_coords.length, colorMap, null);
     }
@@ -512,24 +515,20 @@ function unlinkCameras(zoomSetting) {
         var v = views[i];
         var renderer = v.renderer;
         var camera = new THREE.PerspectiveCamera(60, 
-                renderer.domElement.style.width/renderer.domElement.style.height, 
+                renderer.domElement.width/renderer.domElement.height, 
                 0.001, 1000);
         camera.position.z = 5*zoomSetting;
         camera.updateProjectionMatrix();
         var controls = new THREE.TrackballControls(camera, 
-        v.controls.domElement);
+        renderer.domElement);
         controls.rotateSpeed = 1.0;
         controls.zoomSpeed = 1.2;
         controls.panSpeed = 0.8;
-
         controls.noZoom = false;
         controls.noPan = false;
-
         controls.staticMoving = true;
         controls.dynamicDampingFactor = 0.3;
-
         controls.keys = [ 65, 83, 68 ];
-
         controls.addEventListener( 'change', render );
         v.camera = camera;
         v.controls = controls;

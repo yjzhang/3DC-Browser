@@ -11,6 +11,10 @@ canvas {
     padding:0;
 }
 
+div {
+    line-height: 2;
+}
+
 .colormap {
     float: none;
     margin: 0.1em;
