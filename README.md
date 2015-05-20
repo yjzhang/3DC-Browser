@@ -1,13 +1,16 @@
+% 3D Genome Viewer
+% Yue Zhang
+% May 20, 2015
+
 3D Genome Viewer
 ================
 
-Author: Yue Zhang (yue_zhang@alumni.brown.edu, yjzhang@uw.edu)
 
 ## Example
 
-1. Download http://nerettilab.com/dna3dviz/3d_genome_browser/examples/example_for_3Dviewer.zip, and extract the contained files. There are two structure files, two bedfiles, and two files containing removed bin indices.
+1. Download <http://nerettilab.com/dna3dviz/3d_genome_browser/examples/example_for_3Dviewer.zip>, and extract the contained files. There are two structure files, two bedfiles, and two files containing removed bin indices.
 
-2. Go to http://nerettilab.com/dna3dviz/3d_genome_browser/5VhhqYKE7mbh3kuYSBl0Q.html.
+2. Go to <http://nerettilab.com/dna3dviz/3d_genome_browser/5VhhqYKE7mbh3kuYSBl0Q.html>.
 
 3. Click "Show/Hide Controls". Now, in the first control panel, upload "sen_chr18.txt" to the "Upload a structure file here" button. After this, you should see a visualization of the structure in the main view.
 
