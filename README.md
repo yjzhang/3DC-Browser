@@ -21,3 +21,5 @@
 6. Upload the file "eigenvector_sen_chr18.txt" to the "Upload a bedfile here" button.
 
 7. Click "Update" in either control panel. You should see the colors of the structure change. If you click on the "Description" button on the upper right of the screen, you should see a color map with the min and max values.
+8. 
+
