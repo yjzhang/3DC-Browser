@@ -21,6 +21,13 @@ function constructGeometryArray(points, tubeRadius, tubeSegments,
     return [geometries, balls];
 }
 
+/**
+ * This function updates the colors of all the geometries.
+ *
+ * geometries - array of three.js geometry objects
+ * colors - array of colors
+ * tubeSegments - number of segments per tube
+ * */
 function setGeometryColors(geometries, colors, tubeSegments) {
     for (var i = 0; i<geometries[0].length; i++) {
         var g = geometries[0][i];
@@ -42,6 +49,8 @@ function setGeometryColors(geometries, colors, tubeSegments) {
 
 /**
  * Creates an array of meshes (tubes and balls) from geometries
+ *
+ * TODO: allow multiple materials (for invisibility and stuff)?
  *
  * */
 function createMeshes(points, geometries, material) {

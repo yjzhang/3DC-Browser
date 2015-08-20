@@ -12,5 +12,7 @@ Notes:
 still TODO:
 
 - Screen recording/better screenshotting
-- have labels/descriptions for each view, hidden by default but somehow pop-up-able?
+- have labels/descriptions for each view, hidden by default but somehow pop-up-able? - close to being DONE
 - auto-rotation (around y-axis)
+- tools for rotating/applying matrix transforms to the 3d structures
+- EFFICIENCY

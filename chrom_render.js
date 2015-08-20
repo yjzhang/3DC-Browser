@@ -1,4 +1,6 @@
 // 0. Objects
+//
+// TODO: implement features for modifying DNAStructure objects
 
 var windowWidth = window.innerWidth;
 var windowHeight = window.innerHeight;
@@ -280,7 +282,7 @@ function createDNAStructure(objectText, bedText, colorValues,
     var colors = [];
     if (colorValues != null && colorValues.length >= all_coords.length) {
         if (colorValues.length > all_coords.length) {
-            console.log("Warning there are extra color values");
+            alert("Warning there are extra color values - truncating");
         }
         colors = coordsToColors(all_coords.length, colorMap, colorValues,
                 cmin, cmax);
@@ -292,9 +294,10 @@ function createDNAStructure(objectText, bedText, colorValues,
     }
     structure.colors = colors;
     setGeometryColors(geometry, colors, g.tubeSegments);
+    // TODO: add something for setting certain segments invisible
     //console.log(geometry);
     var material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
-          shading: THREE.FlatShading, vertexColors: THREE.VertexColors} ); 
+          shading: THREE.FlatShading, vertexColors: THREE.VertexColors} );
     var splineObject = createMeshes(all_coords, geometry, material);
     structure.meshes = splineObject;
     return structure;
