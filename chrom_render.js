@@ -303,6 +303,16 @@ function createDNAStructure(objectText, bedText, colorValues,
     return structure;
 }
 
+/**
+ * Returns a structure that is a copy of the old structure...
+ * */
+function copyDNAStructure(oldStructure) {
+    // TODO: need a function to create an objectText from a structure, since
+    // reloadStructureParams uses the objectText...
+    // Or is it a better idea to make reloadStructureParams to use the
+    // structure coords rather than the objectText?
+}
+
 // 1. setting up the basic scene
 var views = [];
 var h = windowHeight;
@@ -341,6 +351,19 @@ function pointsToCurve(coords) {
         }
     }
     return all_coords;
+}
+
+/**
+ * Given an array of Vector3 objects, this returns a string
+ * */
+function curveToString(coords) {
+    var s = "";
+    s = s + String(coords.length) + "\n";
+    for (var i = 0; i<coords.length; i++) {
+        s = s + String(coords[i][0]) + " " + String(coords[i][1]) + " "
+            + String(coords[i][2]) + "\n";
+    }
+    return s;
 }
 
 /**
