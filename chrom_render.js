@@ -126,6 +126,9 @@ function createNewView(w, h) {
     return view1;
 }
 
+/**
+ * Creates a new view with the same camera as the old view?
+ * */
 function createViewFromOldView(w, h, oldView) {
     var newView = new DNAView();
     newView.scene = new THREE.Scene();
@@ -187,7 +190,7 @@ function newView() {
  * element if it already exists.
  * */
 function createDescriptionFromView(view, viewId) {
-    //TODO
+    //TODO: also add a "alignment" box
     var descriptionBox = view.descriptionBox;
     if (descriptionBox == null) {
         descriptionBox = document.createElement("div");
@@ -196,7 +199,7 @@ function createDescriptionFromView(view, viewId) {
         descriptionBox.style.display = "none";
         descriptionBox.style.float = "right";
     } else {
-        // TODO: remove all children?
+        // remove all children? destroy the existing description box
         while (descriptionBox.firstChild) {
             descriptionBox.removeChild(descriptionBox.firstChild);
         }
@@ -298,19 +301,48 @@ function createDNAStructure(objectText, bedText, colorValues,
     //console.log(geometry);
     var material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0, 
           shading: THREE.FlatShading, vertexColors: THREE.VertexColors} );
+    structure.material = material;
     var splineObject = createMeshes(all_coords, geometry, material);
     structure.meshes = splineObject;
     return structure;
 }
 
 /**
- * Returns a structure that is a copy of the old structure...
+ * Returns a structure that is a copy of the old structure, with
+ * optional new objectText 
  * */
-function copyDNAStructure(oldStructure) {
+function copyDNAStructure(oldStructure, objectText) {
     // TODO: need a function to create an objectText from a structure, since
     // reloadStructureParams uses the objectText...
     // Or is it a better idea to make reloadStructureParams to use the
     // structure coords rather than the objectText?
+    var newValues = oldStructure.colorValues;
+    objectText = objectText || oldStructure.objectText;
+    bedText = oldStructure.bedText;
+    var structure = new DNAStructure(objectText, bedText);
+    structure.description = oldStructure.description;
+    structure.graphicsLevel = oldStructure.graphicsLevel;
+    structure.tubeRadius = oldStructure.tubeRadius;
+    structure.colorMap = oldStructure.colorMap;
+    structure.colorValues = newValues;
+    structure.minColorValue = oldStructure.minColorValue;
+    structure.maxColorValue = oldStructure.maxColorValue;
+    var all_coords = pointsToCurve(objectText);
+    structure.coords = all_coords;
+    structure.graphicsOptions = oldStructure.graphicsOptions;
+    var g = structure.graphicsOptions;
+    var geometry = constructGeometryArray(all_coords, structure.tubeRadius,
+        g.tubeSegments, g.sphereWidthSegments, g.sphereHeightSegments);
+    structure.geometry = geometry;
+    structure.colors = oldStructure.colors;
+    setGeometryColors(geometry, structure.colors, g.tubeSegments);
+    var material = new THREE.MeshPhongMaterial( { color : 0xffffff, opacity:0,
+                  shading: THREE.FlatShading, vertexColors: THREE.VertexColors} );
+    structure.material = material;
+    var splineObject = createMeshes(all_coords, structure.geometry, 
+            structure.material);
+    structure.meshes = splineObject;
+    return structure;
 }
 
 // 1. setting up the basic scene
@@ -360,8 +392,8 @@ function curveToString(coords) {
     var s = "";
     s = s + String(coords.length) + "\n";
     for (var i = 0; i<coords.length; i++) {
-        s = s + String(coords[i][0]) + " " + String(coords[i][1]) + " "
-            + String(coords[i][2]) + "\n";
+        s = s + String(coords[i].x) + " " + String(coords[i].y) + " "
+            + String(coords[i].z) + "\n";
     }
     return s;
 }
