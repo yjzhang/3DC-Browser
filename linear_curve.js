@@ -93,7 +93,7 @@ function addGeometriesToScene(points, geometries, material, scene) {
 }
 
 /**
- *
+ * Remove all objects from a scene.
  * */
 function removeObjectsFromScene(objects, scene) {
     for (var i = 0; i<objects.length; i++) {

@@ -58,9 +58,17 @@ function handleFileSelect(evt) {
     var r = new FileReader();
     r.onload = function(e) {
         var fileData = e.target.result;
-        reloadStructureParams(fileData, "", fileName, ""); 
+        try {
+            reloadStructureParams(fileData, "", fileName, ""); 
+        } catch (ex) {
+            alert("Error in loading structure file: " + ex.message);
+        }
     };
-    r.readAsText(f);
+    try {
+        r.readAsText(f);
+    } catch (ex) {
+        alert("Error: " + ex.message);
+    }
     //files is a FileList of File objects. List some properties.
     var output = [];
 }
@@ -82,7 +90,11 @@ function handleBedfileSelect(evt) {
         oldStructure.bedText = fileData;
         oldStructure.colorDesc = fileName;
     };
-    r.readAsText(f);
+    try {
+        r.readAsText(f);
+    } catch (ex) {
+        alert("Error: " + ex.message);
+    }
     //files is a FileList of File objects. List some properties.
     var output = [];
 }
@@ -91,7 +103,11 @@ function handleBedfileSelect(evt) {
  * Callback for the "update" button
  * */
 function updateOptions(evt) {
-    reloadStructureParams("", "", "", "");
+    try {
+        reloadStructureParams("", "", "", "");
+    } catch (ex) {
+        alert("Error in updating structure: " + ex.message);
+    }
     //resetCamera(document.getElementById('zoom-number').value);
 }
 

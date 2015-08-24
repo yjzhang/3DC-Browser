@@ -264,6 +264,7 @@ function createDescriptionFromView(view, viewId) {
  * Creates a new button to show alignments
  * */
 function createAlignmentButton(view, viewId) {
+    console.log("creating alignment button for view " + String(viewId));
     var dbGroup = document.getElementById("db-group-" + String(viewId));
     var alignView = document.getElementById("align-" + String(viewId));
     if (!alignView) {
@@ -312,7 +313,7 @@ function createAlignmentButton(view, viewId) {
         while (viewSelect.firstChild) {
             viewSelect.removeChild(viewSelect.firstChild);
         }
-        for (var i = 0; i<views.length; i++) {
+        for (var i = 0; i<views.length + 1; i++) {
             if (i != viewId) {
                 var viewOption = document.createElement("option");
                 viewOption.value = i;
