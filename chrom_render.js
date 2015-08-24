@@ -171,6 +171,7 @@ function newView() {
         view.controls.handleResize();
         if (view.structures[0]) {
             view.descriptionBox = createDescriptionFromView(view, i);
+            createAlignmentButton(view, i);
         }
     }
     // create new options in the control panel
@@ -257,6 +258,69 @@ function createDescriptionFromView(view, viewId) {
     var rendererElement = view.renderer.domElement;
     dbGroup.style.left = rendererElement.offsetLeft + rendererElement.width - 120;
     return descriptionBox;
+}
+
+/**
+ * Creates a new button to show alignments
+ * */
+function createAlignmentButton(view, viewId) {
+    var dbGroup = document.getElementById("db-group-" + String(viewId));
+    var alignView = document.getElementById("align-" + String(viewId));
+    if (!alignView) {
+        // create new alignment view & button
+        var alignBox = document.createElement("div");
+        alignBox.setAttribute("class", "button-group");
+        alignBox.setAttribute("id", "align-" + String(viewId));
+        alignBox.style.display = "none";
+        alignBox.style.float = "right";
+        var alignButton = document.createElement("button");
+        alignButton.style.float = "right";
+        alignButton.appendChild(document.createTextNode("Align"));
+        alignButton.onclick = function() {
+            var c = document.getElementById("align-"+String(viewId));
+            if (c.style.display==="none")
+                c.style.display="block";
+            else 
+                c.style.display="none";
+        };
+        dbGroup.appendChild(alignButton);
+        dbGroup.appendChild(alignBox);
+        alignBox.appendChild(document.createTextNode("Align to View:"));
+        // TODO: create alignment drop-down & submit button
+        var viewSelect = document.createElement("select");
+        viewSelect.setAttribute("id", "align-view-id-" + String(viewId));
+        for (var i = 0; i<views.length; i++) {
+            if (i != viewId) {
+                var viewOption = document.createElement("option");
+                viewOption.value = i;
+                viewOption.text = String(i);
+                viewSelect.appendChild(viewOption);
+            }
+        }
+        alignBox.appendChild(viewSelect);
+        var alignButton = document.createElement("button");
+        alignButton.appendChild(document.createTextNode("Align Structure"));
+        alignButton.onclick = function(){
+            var v = document.getElementById("align-view-id-"+String(viewId));
+            var compareId = Number(v.value);
+            alignViews(viewId, compareId);
+        };
+        alignBox.appendChild(alignButton);
+    } else {
+        // If the align view is already present, refresh it.
+        var viewSelect = document.getElementById("align-view-id-"+String(viewId));
+        while (viewSelect.firstChild) {
+            viewSelect.removeChild(viewSelect.firstChild);
+        }
+        for (var i = 0; i<views.length; i++) {
+            if (i != viewId) {
+                var viewOption = document.createElement("option");
+                viewOption.value = i;
+                viewOption.text = String(i);
+                viewSelect.appendChild(viewOption);
+            }
+        }
+    }
 }
 
 /**
@@ -436,6 +500,7 @@ function reloadObject(view, newStructure, oldStructure, noRemove) {
     addMeshesToScene(newStructure.meshes, view.scene);
     view.structures.push(newStructure);
     view.descriptionBox = createDescriptionFromView(view, views.indexOf(view));
+    createAlignmentButton(view, views.indexOf(view));
     render();
 }
 
