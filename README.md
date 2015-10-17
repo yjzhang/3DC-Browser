@@ -1,30 +1,20 @@
-% 3D Genome Viewer
-% Yue Zhang
-% May 20, 2015
+## Tutorial By Steven Criscione and Jack Zhang
+Email: [steven_criscione@brown.edu](mailto:steven_criscione@brown.edu)
+Email: [yue_zhang@alumni.brown.edu](mailto:steven_criscione@alumni.brown.edu)
 
-3D Genome Viewer
+## 3DC-Browser: A 3D Chromsoome visualization tool
 ================
 
 
-## Example
+First clone the repository with git:  
 
-1. Download <http://nerettilab.com/dna3dviz/3d_genome_browser/examples/example_for_3Dviewer.zip>, and extract the contained files. There are two structure files, two bedfiles, and two files containing removed bin indices.
+    git clone https://github.com/yjzhang/3DC-Browser.git
 
-2. Go to <http://nerettilab.com/dna3dviz/3d_genome_browser/5VhhqYKE7mbh3kuYSBl0Q.html>.
-
-3. Click "Show/Hide Controls". Now, in the first control panel, upload "sen_chr18.txt" to the "Upload a structure file here" button. After this, you should see a visualization of the structure in the main view.
-
-4. In the second control panel, change the value in the "Chromosome number/name" field to "chr18".
-
-5. Open "removed_indices_sen_chr18.txt", and copy the list of indices to the "Excluded bins" box in the second control panel.
-
-6. Upload the file "eigenvector_sen_chr18.txt" to the "Upload a bedfile here" button.
-
-7. Click "Update" in either control panel. You should see the colors of the structure change. If you click on the "Description" button on the upper right of the screen, you should see a color map with the min and max values.
-8. 
+Open the folder and open the file index.html:
 
 
-## Libraries Used
+
+## References of javascript libraries used
 
 [three.js](http://threejs.org)
 
