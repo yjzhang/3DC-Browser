@@ -1,0 +1,106 @@
+<html> 
+    <head> 
+        <meta charset="UTF-8"> 
+        <title>3D Genome Viewer</title> 
+        <link rel="stylesheet" type="text/css" href="style.css"/>
+    </head> 
+
+    <body> 
+
+        <div class="float-top-group">
+            <button  name="toggle-controls" onclick="javascript:
+                var c=document.getElementById('controls'); 
+                if (c.style.display=='none') {
+                    c.style.display='block';
+                } else c.style.display='none';">Show/Hide Controls</button>
+            <div id="controls" style="display:none;">
+                <div class="button-group" id="structure-controls">
+                    View: <select id="view-id" name="view-id">
+                        <option value="0" selected="selected">0</option>
+                    </select>
+                    <br>
+                    Upload a structure file here:
+                    <input type="file" id="files" name="files[]" multiple />
+                    <br>
+                    Graphics Level:
+                    <select id="graphics-level" name="graphics-level">
+                        <option value="low">Low</option>
+                        <option value="medium" selected="selected">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    <br>
+                    Zoom:
+                    <input type="number" name="zoom-number" id="zoom-number"
+                        step=0.1 value="1.0" onchange="javascript:resetCamera(document.getElementById('zoom-number').value);"/>
+                    <br>
+                    <button name="update" onclick="javascript:updateOptions();">Update</button>
+                    <button name="resetCamera" onclick="javascript:resetCamera(document.getElementById('zoom-number').value);">Link Cameras</button>
+                    <button name="unlinkCamera" onclick="javascript:unlinkCameras(document.getElementById('zoom-number').value);">Unlink Cameras</button>
+                    <button name="addView" onclick="javascript:newView();">Add View</button>
+
+                </div>
+                <div class="button-group" id="bedfile-controls">
+                    Upload a bedfile here:
+                    <input type="file" id="bedfiles" name="files[]" multiple />
+                    <br>
+                    Resolution: <input type="text" id="resolution" name="resolution" value="200000"/>
+                    <br>
+                    Chromosome number/name: <input type="text" id="chrom" name="chrom" value="chr4"/>
+                    <br>
+                    Arm: 
+                    <select id="arm-select" name="arm">
+                        <option value="0" selected="selected">Both</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <br>
+                    Min value: <input type="text" id="min-color"/>
+                    Max value: <input type="text" id="max-color"/>
+                    <br>
+                    Excluded bins (comma-separated): <input type="text" id="excluded" name="excluded"/>
+                    <br>
+                    Tube radius: <input type="number" id="radius" name="radius" step=0.001 value="0.01"/>
+                    <br>
+                    Color value column name: <input type="text" id="value-name" name="value-name" value="eigenvector"/>
+                    <br>
+                    Color Scheme: 
+                    <select id="color-scheme" name="color-scheme">
+                        <option value="BLUE_GREEN_YELLOW_RED_SCHEME">Blue-green-yellow-red</option>
+                        <option value="BLUE_WHITE_RED_SCHEME" selected="selected">Blue-white-red</option>
+                        <option value="WHITE_BLUE_SCHEME">Blue-white</option>
+                        <option value="BLUE_GREEN_SCHEME">Green-blue</option>
+                        <option value="BLUE_RED_SCHEME">Red-blue</option>
+                        <option value="GREEN_RED_SCHEME">Red-green</option>
+                        <option value="YELLOW_RED_SCHEME">Red-yellow</option>
+                        <option value="YELLOW_RED_BLACK_SCHEME">Yellow-red-black</option>
+                    </select>
+                    <br>
+                    <button name="update" onclick="javascript:updateOptions();">Update</button>
+                </div>
+            </div>
+        </div>
+<!-- commenting out colormap for now
+        <div class="right-group">
+            <canvas id="colormap-canvas" width=300 height=150></canvas>
+        </div>
+-->
+        <div class="bottom-group">
+            <!--<button name="screenshot" onclick="javascript:snapshot(0);">Snapshot</button> -->
+        </div>
+        <!--<div class="hover-button" id="drop_zone">Drop files here</div>-->
+        <script src="js/three.min.js"></script> 
+        <script src="js/numeric-1.2.6.min.js"></script> 
+        <script src="js/TrackballControls.js"></script> 
+        <script src="linear_curve.js"></script> 
+        <script src="edit_structure.js"></script> 
+        <script src="colormaps.js"></script> 
+        <script src="utils.js"></script> 
+        <script src="chrom_render.js"></script> 
+        <script src="file_upload.js"></script>
+
+        <script> 
+            render();
+            animate();
+        </script> 
+    </body> 
+</html>
